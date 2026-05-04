@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-async function connectDB(){
+export default async function connectDB(){
     try{
         await mongoose.connect(process.env.DATABASE);
         console.log('Kết nối MongoDB thành công!');
@@ -10,5 +10,3 @@ async function connectDB(){
         process.exit(1);
     }
 }
-
-module.exports = connectDB

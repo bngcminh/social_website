@@ -4,7 +4,7 @@ import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
 import fastifyFormbody from '@fastify/formbody';
-import fastifyMutipart from '@fastify/multipart';
+import fastifyMultipart from '@fastify/multipart';
 import fastifyJWT from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import path from 'node:path';
@@ -22,7 +22,7 @@ dns.setServers(['1.1.1.1']);
 
 fastify.register(connectDB);
 fastify.register(fastifyJWT, {
-    secret: env.process.JWT_KEY
+    secret: process.env.JWT_KEY
 });
 // fastify.register(fastifyStatic);
 // fastify.register(fastifyView);
