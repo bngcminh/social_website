@@ -1,12 +1,12 @@
-import 'dotenv/config';
-
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyView from '@fastify/view';
+import ejs from 'ejs'
 import fastifyFormbody from '@fastify/formbody';
 import fastifyMultipart from '@fastify/multipart';
 import fastifyJWT from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
+import 'dotenv/config';
 import path from 'node:path';
 
 const fastify = Fastify({ logger: true });
@@ -25,7 +25,11 @@ fastify.register(fastifyJWT, {
     secret: process.env.JWT_KEY
 });
 // fastify.register(fastifyStatic);
-// fastify.register(fastifyView);
+fastify.register(fastifyView,  {
+    engine: {
+        ejs: ejs
+    }
+});
 fastify.register(fastifyFormbody);
 fastify.register(fastifyMultipart);
 
