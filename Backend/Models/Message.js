@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-    sender: {
+    conversation: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Conversation',
         required: true
     },
-    recipient: {
+    sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     content: String,
     image: [{ type: String }],
+    isSeen: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const Message = mongoose.model('Message', messageSchema);
