@@ -63,7 +63,7 @@ export const login = async function(req, rep){
             rep.code(400).send('Tài khoản hoặc mật khẩu không đúng')
         }
 
-        const token = fastify.jwt.sign({
+        const token = await rep.jwtSign({
             id: user._id,
             role: user.role
         })
