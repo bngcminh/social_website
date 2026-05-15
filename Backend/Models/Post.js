@@ -2,7 +2,15 @@ import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema({
     content: { type: String, required: true },
-    images: [{ type: String }],
+    media: [
+    {
+        url: String,
+        type: {
+            type: String,
+            enum: ['image', 'video']
+        }
+    }
+    ],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -20,14 +28,14 @@ const postSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    retpostCount: {
+        type: Number,
+        default: 0
+    },
     rePostOf: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         default: null
-    },
-    retweetsCount: {
-        type: Number,
-        default: 0
     },
     isEdited: {
         type: Boolean,
