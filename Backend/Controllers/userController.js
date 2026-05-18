@@ -18,7 +18,8 @@ export const createPost = async function(req, rep){
             }
 
             if(part.type === 'file'){
-                const upload = path.join(__dirname, '../public/upload', part.filename);
+                const filename = `/upload/${part.filename}`;
+                const upload = path.join(__dirname, '../../Frontend/public/upload', filename);
                 await pipeline(part.file, fs.createWriteStream(upload));
                 data.media.push({
                     url: `${part.filename}`,

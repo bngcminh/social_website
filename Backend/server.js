@@ -13,25 +13,45 @@ const fastify = Fastify({ logger: true });
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import connectDB from './config/db.js'
-
 // Fix Error: querySrv ECONNREFUSED MongoDB
 import dns from 'node:dns/promises'
 import { fileURLToPath } from 'node:url';
 dns.setServers(['1.1.1.1']);
 
+import connectDB from './config/db.js'
+import { userRoute } from './Routes/userRoute.js';
+import { authRoute } from './Routes/authRoute.js';
+
 fastify.register(connectDB);
 fastify.register(fastifyJWT, {
     secret: process.env.JWT_KEY
 });
-// fastify.register(fastifyStatic);
+fastify.register(fastifyCookie)
+fastify.register(fastifyStatic, {
+    root: path.join(__dirname, '../Frontend/public'),
+    prefix: '/public/'
+});
+
+fastify.register(fastifyStatic, {
+    root: path.join(__dirname, '../Frontend/public/upload'),
+    prefix: '/upload/',
+    decorateReply: false
+});
+
 fastify.register(fastifyView,  {
     engine: {
         ejs: ejs
     }
 });
 fastify.register(fastifyFormbody);
-fastify.register(fastifyMultipart);
+fastify.register(fastifyMultipart, {
+    limits: {
+        fileSize: 40 * 1024 * 1024,
+    }
+});
+
+fastify.register(authRoute);
+fastify.register(userRoute);
 
 fastify.get('/', function(req, rep){
     rep.send('Run!')
