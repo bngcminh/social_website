@@ -6,14 +6,14 @@ import Comment from '../Models/Comment.js';
 import Notifcation from '../Models/Notification.js';
 import Coversation from '../Models/Coversation.js';
 
-export const getHome = async function(params){
-    try{
-        const posts = await Post.find();
-        const  
-    }catch(err){
+// export const getHome = async function(params){
+//     try{
+//         const posts = await Post.find();
+//         const  
+//     }catch(err){
 
-    }
-}
+//     }
+// }
 
 export const getProfile = async function(req, rep){
     try{
