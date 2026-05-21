@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     website: String,
     followersCount: { type: Number, default: 0 },
     followingCount: { type: Number, default: 0 },
-    isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     role: { type: String, default: 'user' },
     lastLogin: Date
