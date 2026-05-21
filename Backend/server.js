@@ -21,6 +21,7 @@ dns.setServers(['1.1.1.1']);
 import connectDB from './config/db.js'
 import { userRoute } from './Routes/userRoute.js';
 import { authRoute } from './Routes/authRoute.js';
+import { viewRoute } from './Routes/viewRoute.js';
 
 fastify.register(connectDB);
 fastify.register(fastifyJWT, {
@@ -52,10 +53,7 @@ fastify.register(fastifyMultipart, {
 
 fastify.register(authRoute);
 fastify.register(userRoute);
-
-fastify.get('/', function(req, rep){
-    rep.send('Run!')
-});
+fastify.register(viewRoute);
 
 try{
     fastify.listen({ port: process.env.PORT })

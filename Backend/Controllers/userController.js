@@ -126,3 +126,4 @@ export const deletePost = async function(req, rep){
         return rep.code(500).send('Có lỗi trong quá trình xóa bài viết');
     }
 }
+
