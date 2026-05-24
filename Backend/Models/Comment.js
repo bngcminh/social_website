@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
-    content: { type: String, required: true },
+    content: { type: String, default: '' },
     image: String,
     author: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,10 +23,10 @@ const commentSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     }],
-    likeCount: [{
+    likeCount: {
         type: Number,
         default: 0
-    }]
+    }
 }, { timestamps: true });
 
 const Comment = mongoose.model('Comment', commentSchema);
