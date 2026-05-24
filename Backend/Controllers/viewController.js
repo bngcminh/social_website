@@ -57,8 +57,23 @@ export const getHome = async function(req, rep){
     }
 }
 
-export const postDetail = async function(req, rep){
-    
+export const getPostDetail = async function(req, rep){
+    try{
+        const postId = req.params.postId;
+        const post = await Post.findByIdAndUpdate(
+            postId,
+            { $inc: { viewsCount: 1 } },
+            { new: true }
+        ).populate('author', 'username avatar').populate({ 
+            path: 'rePostOf', 
+            select: 'content media author likeCount commentCount viewsCount retpostCount createdAt', 
+            populate: { path: 'author', select: 'username avatar isVerified' } 
+        });
+        return rep.send({post: formPostData(post)})
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình lấy bài viết này');
+    }
 }
 
 export const getProfile = async function(req, rep){
