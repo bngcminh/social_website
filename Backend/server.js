@@ -22,6 +22,8 @@ import connectDB from './config/db.js'
 import { userRoute } from './Routes/userRoute.js';
 import { authRoute } from './Routes/authRoute.js';
 import { viewRoute } from './Routes/viewRoute.js';
+import { postRoute } from './Routes/postRoute.js';
+import { interactRoute } from './Routes/interactRoute.js';
 
 fastify.register(connectDB);
 fastify.register(fastifyJWT, {
@@ -54,6 +56,8 @@ fastify.register(fastifyMultipart, {
 fastify.register(authRoute);
 fastify.register(userRoute);
 fastify.register(viewRoute);
+fastify.register(postRoute);
+fastify.register(interactRoute);
 
 try{
     fastify.listen({ port: process.env.PORT })
