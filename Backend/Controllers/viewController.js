@@ -75,13 +75,3 @@ export const getPostDetail = async function(req, rep){
         return rep.code(500).send('Có lỗi trong quá trình lấy bài viết này');
     }
 }
-
-export const getProfile = async function(req, rep){
-    try{
-        const getInfor = await User.findById(req.user.id);
-        rep.send({ getInfor }); 
-    }catch(err){
-        console.log(err);
-        rep.code(500).send('Có lỗi trong quá trình lấy trang cá nhân')
-    }
-}
