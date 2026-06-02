@@ -1,0 +1,31 @@
+{
+  "name": "social-network-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node Backend/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "^10.0.0",
+    "@fastify/session": "^11.1.1",
+    "@fastify/static": "^9.1.3",
+    "@fastify/view": "^11.1.1",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
+    "fastify": "^5.8.5",
+    "mongoose": "^9.5.0",
+    "nodemon": "^3.1.14",
+    "socket.io": "^4.8.3",
+    "validator": "^13.15.35"
+  }
+}
