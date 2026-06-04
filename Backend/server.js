@@ -8,13 +8,14 @@ import fastifyJWT from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import 'dotenv/config';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const fastify = Fastify({ logger: true });
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Fix Error: querySrv ECONNREFUSED MongoDB
 import dns from 'node:dns/promises'
-import { fileURLToPath } from 'node:url';
 dns.setServers(['1.1.1.1']);
 
 import connectDB from './config/db.js'
@@ -22,7 +23,7 @@ import { userRoute } from './Routes/userRoute.js';
 import { authRoute } from './Routes/authRoute.js';
 import { viewRoute } from './Routes/viewRoute.js';
 import { postRoute } from './Routes/postRoute.js';
-import { interactRoute } from './Routes/interactRoute.js';4
+import { interactRoute } from './Routes/interactRoute.js';
 import { searchRoute } from './Routes/searchRoute.js';
 
 fastify.register(connectDB);
@@ -44,7 +45,8 @@ fastify.register(fastifyStatic, {
 fastify.register(fastifyView,  {
     engine: {
         ejs: ejs
-    }
+    },
+    root: path.join(__dirname, '../Frontend/views')
 });
 fastify.register(fastifyFormbody);
 fastify.register(fastifyMultipart, {
