@@ -1,0 +1,513 @@
+/* Profile Page Styles */
+
+.profile-header {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.65);
+  z-index: 1000;
+  height: 53px;
+}
+
+.profile-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  min-width: 56px;
+  min-height: 32px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #000;
+}
+
+.back-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.profile-header-info {
+  flex: 1;
+}
+
+.profile-username {
+  line-height: 24px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+  font-weight: 800;
+  display: block;
+}
+
+.profile-posts-count {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+  color: #71767b;
+}
+
+/* Banner and Avatar */
+.profile-banner {
+  position: relative;
+  background-color: #2f3336;
+  height: 200px;
+  overflow: visible;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2f3336 0%, #1a1a1a 100%);
+}
+
+.profile-avatar {
+  min-width: 48px;
+  margin-top: -15%;
+  width: 25%;
+  margin-bottom: 12px;
+  height: auto;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid #000;
+  object-fit: cover;
+}
+
+.profile-avatar .avatar {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(4, 132, 146);
+  border: 4px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 70px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Profile Info */
+.profile-info {
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-bottom: 16px;
+  padding-top: 12px;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-info-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.profile-names {
+  flex: 1;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.full-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  font-size: 15px;
+  color: rgb(113, 118, 123);
+  font-feature-settings: 'ss01' on;
+  line-height: 20px;
+}
+
+.edit-profile-btn,
+.follow-btn {
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  border: 1px solid #2f3336;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.edit-profile-btn {
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+  height: 100%;
+  align-self: flex-start; /* ← thêm dòng này */
+}
+
+.edit-profile-btn:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+}
+
+.follow-btn {
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+  height: 100%;
+  align-self: flex-start; /* ← thêm dòng này */
+}
+
+.follow-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.follow-btn.following {
+  background-color: transparent;
+  color: #1d9bf0;
+  border-color: #1d9bf0;
+}
+
+.follow-btn.following:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+}
+
+.profile-bio {
+  font-size: 15px;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.profile-meta {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  color: rgb(113, 118, 123);
+  line-height: 12px;
+  font-weight: 400;
+}
+.meta-item svg{
+  margin-right: 4px;
+  height: 1.25em;
+  display: inline-block;
+}
+.meta-item a {
+  color: #1d9bf0;
+  text-decoration: none;
+}
+
+.meta-item a:hover {
+  text-decoration: underline;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  gap: 4px;
+}
+
+.stat-count {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #71767b;
+}
+
+
+.profile-tabs{
+  display: flex;
+  border-bottom: 1px solid #2f3336;
+}
+.tab-button{
+  height: 53px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 15px;
+  color: #71767b;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+/* Profile Posts */
+/* .profile-posts {
+  border-right: 1px solid #2f3336;
+} */
+
+.post {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #2f3336;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.post:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.post-left {
+  flex-shrink: 0;
+}
+
+.post-left .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #2f3336;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.post-left .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-right {
+  flex: 1;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  justify-content: space-between;
+  position: relative;
+}
+.tweet-options{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.tweet-options svg{
+  height: 1.25em;
+  width: 1.25em;
+  fill: rgb(113, 118, 122);
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+.post-author {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.post-handle {
+  color: #71767b;
+  font-size: 15px;
+}
+
+.post-time {
+  color: #71767b;
+  font-size: 15px;
+}
+
+.post-menu {
+  margin-left: auto;
+  position: relative;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  color: #1d9bf0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.menu-btn:hover {
+  background-color: rgba(29, 155, 240, 0.1);
+}
+
+.post-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 32px;
+  right: 0;
+  background-color: #1a1a1a;
+  border: 1px solid #2f3336;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 100;
+  min-width: 150px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.post-menu-dropdown.active {
+  display: block;
+}
+
+.post-menu-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s;
+}
+
+.post-menu-dropdown button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.post-content {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.post-media {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.post-media img,
+.post-media video {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 0.5px solid rgb(113, 118, 122);
+}
+
+.post-actions {
+  display: flex;
+  gap: 16px;
+  color: #71767b;
+  max-width: 200px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: none;
+  color: #71767b;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.action-btn:hover {
+  color: #1d9bf0;
+}
+
+.action-btn.liked {
+  color: #e0245e;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #71767b;
+  text-align: center;
+}
+
+.empty-state svg {
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-banner {
+    height: 120px;
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+    bottom: -48px;
+  }
+
+  .profile-avatar .avatar {
+    font-size: 30px;
+  }
+
+  .profile-info {
+    padding-top: 50px;
+  }
+
+  .edit-profile-btn,
+  .follow-btn {
+    min-width: 100px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .post-media {
+    grid-template-columns: 1fr;
+  }
+}
