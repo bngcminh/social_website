@@ -3,8 +3,7 @@ import { authentication } from '../Middlewares/authentication.js';
 
 export function userRoute(fastify, options){
     fastify.get('/users/me', { preHandler: authentication }, userController.getMyProfile);
-    fastify.put('/users/me', { preHandler: authentication }, userController.updateProfile);
-    fastify.get('/users/suggest', { preHandler: authentication }, userController.suggestUsers);
+    fastify.put('/users/me', { preHandler: authentication }, userController.updateMyProfile);
     fastify.get('/users/:userId', { preHandler: authentication }, userController.getUserProfile);
     fastify.post('/users/:userId/follow', { preHandler: authentication }, userController.followUser);
     fastify.get('/users/:userId/followers', { preHandler: authentication }, userController.getFollowers);
