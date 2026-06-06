@@ -5,7 +5,7 @@ function fmt(n){return n>=1000?(n/1000).toFixed(1)+'K':n}
 
 async function loadPosts() {
   try {
-    const response = await fetch('/api/posts');
+    const response = await fetch('/');
     const result = await response.json();
     
     if (result.success && result.data) {
@@ -311,7 +311,7 @@ async function postTweet(e){
       formData.append('file', fileInput.files[0]);
     }
     
-    const resp=await fetch('/user/create_post', {
+    const resp=await fetch('/create_post', {
       method:'POST',
       body:formData
     });
