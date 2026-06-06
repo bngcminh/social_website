@@ -2,21 +2,21 @@ import User from '../Models/User.js';
 import Follow from '../Models/Follow.js';
 import Post from '../Models/Post.js';
 
-function formPostData(){
+function formPostData(post){
     return {
-        id: Post._id,
-        _id: Post._id,
-        content: Post.content,
-        media: Post.media,
-        author: Post.author,
-        likeCount: Post.likeCount,
-        commentCount: Post.commentCount,
-        viewsCount: Post.viewsCount,
-        repostCount: Post.repostCount,
-        repostOf: Post.repostOf,
-        isEdited: Post.isEdited,
-        createdAt: Post.createdAt,
-        updatedAt: Post.updatedAt
+        id: post._id,
+        _id: post._id,
+        content: post.content,
+        media: post.media,
+        author: post.author,
+        likeCount: post.likeCount,
+        commentCount: post.commentCount,
+        viewsCount: post.viewsCount,
+        repostCount: post.repostCount,
+        repostOf: post.repostOf,
+        isEdited: post.isEdited,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt
     }
 }
 
@@ -78,6 +78,37 @@ export const getHome = async function(req, rep){
     }catch(err){
         console.log(err);
         return rep.code(500).send('Co loi trong qua trinh lay cac bai viet');
+    }
+}
+
+export const getHomePosts = async function(req, rep){
+    try{
+        const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
+        const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
+        const [posts, totalPosts] = await Promise.all([
+            Post.find()
+                .populate('author', 'username avatar')
+                .populate({
+                    path: 'rePostOf',
+                    select: 'content media author likeCount commentCount viewsCount repostCount createdAt',
+                    populate: {
+                        path: 'author',
+                        select: 'username avatar'
+                    }
+                })
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit),
+            Post.countDocuments()
+        ]);
+
+        return rep.send({
+            data: posts.map(formPostData),
+            success: true
+        });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình lấy các bài viết');
     }
 }
 

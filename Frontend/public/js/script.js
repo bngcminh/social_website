@@ -5,7 +5,7 @@ function fmt(n){return n>=1000?(n/1000).toFixed(1)+'K':n}
 
 async function loadPosts() {
   try {
-    const response = await fetch('/');
+    const response = await fetch('/get_posts');
     const result = await response.json();
     
     if (result.success && result.data) {
