@@ -9,14 +9,14 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const getProfile = async function(req, rep){
+export const getProfileUser = async function(req, rep){
     try{
         const username = req.params.username;
         const currentUser = await User.findById(req.user.id).select('-password');
         const profileUser = await User.findOne({ username }).select('-password');
         
         if(!profileUser){
-            rep.code(404).send('Người dùng không tồn tại!');
+            return rep.code(404).send('Người dùng không tồn tại!');
         }
 
         const posts = await Post.find({ author: profileUser._id })
@@ -68,7 +68,7 @@ export const updateProfile = async function(req, rep){
                 await pipeline(part.file, fs.createWriteStream(upload));
             }
         }
-        if(!data.username || data.username.trim() < 6){
+        if(!data.username || data.username.trim().length < 6){
             rep.code(400).send('Vui lòng nhập tên người dùng trên 6 kí tự');
         }
         const existUsername = await User.findOne({
@@ -92,42 +92,17 @@ export const updateProfile = async function(req, rep){
     }
 }
 
-export const getUserPosts = async function(req, rep){
-    try{
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
-        if(!user){
-            rep.code(400).send('Người dùng khong tồn tại');
-        }
-
-        const posts = await Post.find({ author: userId })
-            .populate('author', 'username avatar')
-            .populate({
-                path: 'rePostOf',
-                populate: {
-                    path: 'author',
-                    select: 'username avatar'
-                }
-            })
-            .sort({ createAt: -1 })
-        return rep.send({ posts });
-    }catch(err){
-        console.log(err);
-        rep.code(500).send('Có lỗi trong quá trình lấy các bài viết người dùng này');
-    }
-}
-
 export const getFollowers = async function(req, rep){
     try{
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
+        const username = req.params.username;
+        const user = await User.findOne({ username });
         if(!user){
-            rep.code(400).send('Người dùng khong tồn tại');
+            rep.code(400).send('Người dùng không tồn tại');
         }
 
-        const followers = await Follow.findById({ following: userId })
+        const followers = await Follow.findById({ following: user._id })
             .populate('follower', 'username avatar')
-            .sort({ createAt: -1 });
+            .sort({ createdAt: -1 });
         rep.send({
             followers: followers.map(function(item){
                 return item.follower;
@@ -141,15 +116,15 @@ export const getFollowers = async function(req, rep){
 
 export const getFollowing = async function(req, rep){
     try{
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
+        const username = req.params.username;
+        const user = await User.findOne({ username });
         if(!user){
-            rep.code(400).send('Người dùng khong tồn tại');
+            rep.code(400).send('Người dùng không tồn tại');
         }
 
-        const following = await Follow.findById({ follower: userId })
+        const following = await Follow.findById({ follower: user._id })
             .populate('follower', 'username avatar')
-            .sort({ createAt: -1 });
+            .sort({ createdAt: -1 });
         rep.send({
             following: following.map(function(item){
                 return item.following;
@@ -163,7 +138,7 @@ export const getFollowing = async function(req, rep){
 
 export const followUser = async function(req, rep){
     try{
-        const followingId = req.params.followingId;
+        const followingId = req.params.userId;
         if(followingId === req.user.id){
             return rep.code(400).send('Không thể theo dõi chính mình');
         }
@@ -173,13 +148,16 @@ export const followUser = async function(req, rep){
             return rep.code(400).send('Người dùng không tồn tại');
         }
         
-        const followExist = Follow.findOne({
+        const followExist = await Follow.findOne({
             follower: req.user.id,
             following: followingId
         });
         
         if(followExist){
-            await Follow.deleteOne();
+            await Follow.deleteOne({
+                follower: req.uer.id,
+                following: followingId
+            });
             const followingUser = await User.findByIdAndUpdate(
                 req.user.id,
                 { $inc: { followingCount: -1 } },
