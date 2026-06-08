@@ -9,20 +9,39 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const getMyProfile = async function(req, rep){
+export const getProfile = async function(req, rep){
     try{
-        const getMyInfor = await User.findById(req.user.id).select('-password');
-        if(!getInfor){
-            return rep.code(400).send('Không tìm thấy thông tin cá nhân');
+        const username = req.params.username;
+        const currentUser = await User.findById(req.user.id).select('-password');
+        const profileUser = await User.findOne({ username }).select('-password');
+        
+        if(!profileUser){
+            rep.code(404).send('Người dùng không tồn tại!');
         }
-        return rep.send({ getInfor })
+
+        const posts = await Post.find({ author: profileUser._id })
+            .populate('author', 'username avatar')
+            .sort({ createdAt: -1 })
+        const isOwnProfile = currentUser._id.toString() === profileUser._id.toString();
+        const isFollowing = isOwnProfile ? false : !!await Follow.exists({
+            follower: currentUser._id,
+            following: profileUser._id
+        });
+
+        return rep.view('profile.ejs', {
+            user: currentUser,
+            profileUser,
+            posts,
+            isOwnProfile,
+            isFollowing
+        });
     }catch(err){
         console.log(err);
         rep.code(500).send('Có lỗi trong quá trình lấy thông tin cá nhân');
     }
 }
 
-export const updateMyProfile = async function(req, rep){
+export const updateProfile = async function(req, rep){
     try{
         const getMyInfor = await User.findById(req.user.id).select('-password');
         if(!getMyInfor){
@@ -70,29 +89,6 @@ export const updateMyProfile = async function(req, rep){
     }catch(err){
         console.log(err);
         rep.code(500).send('Có lỗi trong quá trình cập nhật trang cá nhân')
-    }
-}
-
-export const getUserProfile = async function(req, rep){
-    try{
-        const userId = req.params.userId;
-        const getUser = await User.findById(userId).select('-password');
-        if(!getUser){
-            rep.code(400).send('Người dùng này không tồn tại');
-        }
-
-        const isFollowing = await Follow.exists({
-            follower: req.user.id,
-            following: userId
-        })
-
-        return rep.send({
-            getUser,
-            isFollowing: !!isFollowing
-        })
-    }catch(err){
-        console.log(err);
-        rep.code(500).send('Có lỗi trong quá trình lấy thông tin người dùng này');
     }
 }
 
