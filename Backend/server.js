@@ -9,8 +9,10 @@ import fastifyCookie from '@fastify/cookie';
 import 'dotenv/config';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Server } from 'socket.io';
 
 const fastify = Fastify({ logger: true });
+const io = new Server(fastify.server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -62,8 +64,17 @@ fastify.register(postRoute);
 fastify.register(interactRoute);
 fastify.register(searchRoute);
 
-try{
-    fastify.listen({ port: process.env.PORT })
-}catch(err){
-    fastify.log.error(err);
-}
+io.on('Connetion', function(socket){
+    console.log('connected', socket.id);
+    socket.emit('chat message', function(msg){
+        console.log(msg);
+        io.emit('chat message', msg)
+    });
+});
+
+fastify.listen({ port: process.env.PORT }, function(err){
+    if(err){
+        fastify.log.error(err);
+        process.exit(1);
+    }
+});

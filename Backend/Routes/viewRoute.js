@@ -5,5 +5,6 @@ export function viewRoute(fastify, options) {
     fastify.get('/', { preHandler: authentication }, viewController.getHome);
     fastify.get('/get_posts', { preHandler: authentication }, viewController.getHomePosts)
     fastify.get('/auth', viewController.getAuth);
+    fastify.get('/messages', viewController.getMessage)
     fastify.get('/post/:postId', viewController.getPostDetail);
 }

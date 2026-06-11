@@ -1,4 +1,5 @@
 import User from '../Models/User.js';
+import Conversation from '../Models/Coversation.js'
 import Follow from '../Models/Follow.js';
 import Post from '../Models/Post.js';
 
@@ -40,7 +41,20 @@ export const getAuth = async function(req, rep){
         return rep.view('auth.ejs');
     }catch(err){
         console.log(err);
-        return rep.code(500).send('Co loi trong qua trinh hien thi trang dang nhap');
+        return rep.code(500).send('Có lỗi trong quá trình hiển thị trang đăng nhập');
+    }
+}
+
+export const getMessage = async function(req, rep){
+    try{
+        const user = await getCurrentUser(req);
+        return rep.view('messages.ejs', { 
+            user,
+            conversations: []
+        });
+    }catch (err) {
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình hiển thị trang tin nhắn');
     }
 }
 
