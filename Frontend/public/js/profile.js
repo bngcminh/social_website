@@ -198,8 +198,8 @@ async function saveProfile() {
             formData.append('avatar', avatarFileInput.files[0]);
         }
 
-        const response = await fetch('/api/users/update-profile', {
-            method: 'POST',
+        const response = await fetch('/profile/edit', {
+            method: 'PUT',
             body: formData
         });
 

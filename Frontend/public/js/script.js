@@ -315,7 +315,7 @@ async function postTweet(e){
       formData.append('file', fileInput.files[0]);
     }
     
-    const resp=await fetch('/user/create_post', {
+    const resp=await fetch('/create_post', {
       method:'POST',
       body:formData
     });
