@@ -139,8 +139,18 @@ async function sendMessage() {
             messageInput.value = '';
             messageInput.style.height = 'auto';
             
-            // Refresh messages
-            await refreshMessages(currentConversationId);
+            // Fetch and display messages immediately
+            const convResponse = await fetch(`/api/conversations/${currentConversationId}`);
+            const convResult = await convResponse.json();
+            
+            if (convResult.success) {
+                displayMessages(convResult.data.messages);
+                // Scroll to bottom
+                setTimeout(() => {
+                    const messagesList = document.getElementById('messages-list');
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                }, 100);
+            }
         } else {
             alert('Lỗi khi gửi tin nhắn: ' + result.message);
         }
@@ -150,7 +160,6 @@ async function sendMessage() {
     }
 }
 
-// Handle message input
 function setupMessageInput() {
     const messageInput = document.getElementById('message-input');
     const sendBtn = document.getElementById('send-btn');
@@ -170,7 +179,6 @@ function setupMessageInput() {
     sendBtn.addEventListener('click', sendMessage);
 }
 
-// Search conversations
 function setupSearch() {
     const searchInput = document.getElementById('search-input');
     
@@ -189,7 +197,6 @@ function setupSearch() {
     });
 }
 
-// Escape HTML to prevent XSS
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
@@ -201,12 +208,10 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, m => map[m]);
 }
 
-// New message button
 function setupNewMessageButton() {
     const newMessageBtn = document.querySelector('.new-message-btn');
     
     newMessageBtn.addEventListener('click', () => {
-        // TODO: Open dialog to search and start new conversation
         const targetUsername = prompt('Nhập tên người dùng để bắt đầu cuộc trò chuyện:');
         if (targetUsername) {
             startNewConversation(targetUsername);
@@ -214,17 +219,14 @@ function setupNewMessageButton() {
     });
 }
 
-// Start new conversation
 async function startNewConversation(username) {
     try {
-        // First search for user
         const response = await fetch(`/api/users/search?q=${encodeURIComponent(username)}`);
         const result = await response.json();
 
         if (result.success && result.data.length > 0) {
             const user = result.data[0];
             
-            // Start conversation
             const convResponse = await fetch('/api/conversations/start', {
                 method: 'POST',
                 headers: {
@@ -238,7 +240,6 @@ async function startNewConversation(username) {
             const convResult = await convResponse.json();
             
             if (convResult.success) {
-                // Reload page or add new conversation to list
                 location.reload();
             }
         } else {
@@ -250,10 +251,7 @@ async function startNewConversation(username) {
     }
 }
 
-// Get userId from script tag (set by server)
-// const userId is defined in messages.ejs
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     setupMessageInput();
     setupSearch();

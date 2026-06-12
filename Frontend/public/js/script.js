@@ -53,6 +53,8 @@ function renderFeed(){
     clone.querySelector('.avatar').textContent=t.author?.username?.charAt(0).toUpperCase() || 'U';
     clone.querySelector('.tweet-name').textContent=t.author?.username || 'Anonymous';
     clone.querySelector('.tweet-handle').textContent='@' + (t.author?.username || 'user');
+    clone.querySelector('.tweet-name').style.cursor='pointer';
+    clone.querySelector('.tweet-name').onclick=()=>window.location.href=`/profile/${t.author?.username}`;   
     
     // Calculate time ago
     const createdAt = new Date(t.createdAt);
@@ -107,6 +109,8 @@ function renderFollows(){
     clone.querySelector('.avatar').textContent=f.init;
     clone.querySelector('.user-name').textContent=f.name;
     clone.querySelector('.user-handle').textContent=f.handle;
+    clone.querySelector('.user-name').style.cursor='pointer';
+    clone.querySelector('.user-name').onclick=()=>window.location.href=`/profile/${f.name}`;
     const btn=clone.querySelector('.follow-btn');
     btn.id='fb'+f._id;
     btn.textContent=f.following?'Đang theo dõi':'Theo dõi';
@@ -121,7 +125,7 @@ function toggleLike(id){
   if(!t) return;
   
   // Call API
-  fetch(`/api/posts/${id}/like`, {
+  fetch(`/posts/${id}/like`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({})
@@ -152,7 +156,7 @@ function toggleRT(id){
   if(!t) return;
   
   // Call API
-  fetch(`/api/posts/${id}/retweet`, {
+  fetch(`/get_posts/${id}/retweet`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({})
@@ -187,7 +191,7 @@ function bump(e,id,field){
     const content = prompt('Trả lời bài viết:');
     if(!content) return;
     
-    fetch(`/api/posts/${id}/reply`, {
+    fetch(`/get_posts/${id}/reply`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content })
@@ -311,7 +315,7 @@ async function postTweet(e){
       formData.append('file', fileInput.files[0]);
     }
     
-    const resp=await fetch('/create_post', {
+    const resp=await fetch('/user/create_post', {
       method:'POST',
       body:formData
     });

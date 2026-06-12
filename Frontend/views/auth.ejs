@@ -3,91 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập / Đăng Ký - Social Website</title>
+    <title>Đăng Nhập / Đăng Ký</title>
     <link rel="stylesheet" href="/public/css/auth.css">
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-box">
-            <!-- Logo / Brand -->
-            <div class="auth-header">
-                <h1 class="brand-name">𝕏</h1>
-                <h2 id="auth-title">Đăng Nhập</h2>
-            </div>
 
-            <!-- Login Form -->
-            <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <input 
-                        type="text" 
-                        id="login-identifier" 
-                        placeholder="Tên người dùng hoặc Email" 
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <input 
-                        type="password" 
-                        id="login-password" 
-                        placeholder="Mật khẩu" 
-                        required
-                    >
-                </div>
-                <button type="submit" class="auth-btn" id="login-btn">Đăng Nhập</button>
-                <div id="login-error" class="error-message"></div>
-            </form>
+    <div class="ambient-light-1"></div>
+    <div class="ambient-light-2"></div>
 
-            <!-- Signup Form -->
-            <form id="signup-form" class="auth-form" onsubmit="handleRegister(event)">
-                <div class="form-group">
-                    <input 
-                        type="text" 
-                        id="signup-username" 
-                        placeholder="Tên người dùng" 
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <input 
-                        type="email" 
-                        id="signup-email" 
-                        placeholder="Email" 
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <input 
-                        type="password" 
-                        id="signup-password" 
-                        placeholder="Mật khẩu (ít nhất 6 ký tự)" 
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <input 
-                        type="password" 
-                        id="signup-confirm-password" 
-                        placeholder="Xác nhận mật khẩu" 
-                        required
-                    >
-                </div>
-                <button type="submit" class="auth-btn" id="signup-btn">Đăng Ký</button>
-                <div id="signup-error" class="error-message"></div>
-            </form>
+    <div class="main-container">
 
-            <!-- Toggle between Login and Signup -->
-            <div class="auth-toggle">
-                <p id="toggle-text">Chưa có tài khoản? <span id="toggle-btn" onclick="toggleForm()">Đăng ký ngay</span></p>
+        <div class="form-section">
+            <div class="form-box">
+
+                <button class="btn-social" type="button">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 22H8c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2zm-8-18v14h8V4H8zm4 16c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1z"/></svg>
+                    Tiếp tục với số điện thoại
+                </button>
+                <button class="btn-social" type="button">
+                    <svg viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.16 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                    </svg>
+                    Tiếp tục với Google
+                </button>
+                <button class="btn-social" type="button">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 14.384c-.035-2.736 2.316-4.085 2.42-4.14-1.31-1.85-3.415-2.1-4.18-2.134-1.785-.175-3.486 1.018-4.39 1.018-.9 0-2.31-1.002-3.79-1.002-1.92 0-3.69 1.077-4.67 2.72-1.98 3.32-.5 8.24 1.43 10.92.93 1.306 2.03 2.76 3.48 2.71 1.4-.047 1.93-.868 3.63-.868 1.69 0 2.19.868 3.64.84 1.49-.02 2.46-1.32 3.38-2.62 1.07-1.5 1.51-2.95 1.53-3.02-.02-.01-2.84-1.04-2.87-4.42zm-1.89-6.38c.78-.92 1.3-2.19 1.15-3.47-1.12.05-2.46.73-3.26 1.65-.7.81-1.32 2.1-1.15 3.35 1.25.1 2.47-.63 3.26-1.53z"/></svg>
+                    Tiếp tục với Apple
+                </button>
+
+                <div class="divider">hoặc</div>
+
+                <form id="login-form" class="auth-form active" onsubmit="handleLogin(event)" autocomplete="on">
+                    <div class="input-group">
+                        <input type="text" id="login-identifier" name="identifier"
+                               placeholder="Email hoặc tên người dùng"
+                               autocomplete="username" required>
+                        <input type="password" id="login-password" name="password"
+                               placeholder="Mật khẩu"
+                               autocomplete="current-password" required>
+                    </div>
+                    <div id="login-error" class="error-message"></div>
+                    <button type="submit" class="btn-submit active" id="login-btn">Đăng Nhập</button>
+                    <p class="terms-text">
+                        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a>,
+                        <a href="#">Chính sách bảo mật</a> và <a href="#">Sử dụng Cookie</a> của chúng tôi.
+                    </p>
+                    <div class="auth-toggle">
+                        <p id="toggle-text">Chưa có tài khoản?
+                            <span id="toggle-btn" onclick="toggleForm()">Đăng ký ngay</span>
+                        </p>
+                    </div>
+                </form>
+
+                <!-- FORM ĐĂNG KÝ — id="signup-form" là <form> thật, khớp với JS -->
+                <form id="signup-form" class="auth-form" onsubmit="handleRegister(event)" autocomplete="on">
+                    <div class="input-group">
+                        <input type="text" id="signup-username" name="username"
+                               placeholder="Tên người dùng"
+                               autocomplete="username" required>
+                        <input type="email" id="signup-email" name="email"
+                               placeholder="Email"
+                               autocomplete="email" required>
+                        <input type="password" id="signup-password" name="password"
+                               placeholder="Mật khẩu (ít nhất 6 ký tự)"
+                               autocomplete="new-password" required>
+                        <input type="password" id="signup-confirm-password" name="confirmPassword"
+                               placeholder="Xác nhận mật khẩu"
+                               autocomplete="new-password" required>
+                    </div>
+                    <div id="signup-error" class="error-message"></div>
+                    <button type="submit" class="btn-submit active" id="signup-btn">Đăng Ký</button>
+                    <p class="terms-text">
+                        Bằng cách đăng ký, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và
+                        <a href="#">Chính sách bảo mật</a> của chúng tôi.
+                    </p>
+                    <div class="auth-toggle">
+                        <p id="toggle-text-register">Đã có tài khoản?
+                            <span onclick="toggleForm()">Đăng nhập</span>
+                        </p>
+                    </div>
+                </form>
+
             </div>
         </div>
 
-        <!-- Success Message -->
-        <div id="success-modal" class="modal">
-            <div class="modal-content">
-                <h3 id="success-title">Thành công!</h3>
-                <p id="success-message"></p>
-                <button onclick="closeSuccessModal()" class="modal-btn">OK</button>
-            </div>
+        <!-- PHẦN LOGO (phải) -->
+        <div class="logo-section">
+            <svg class="x-logo-large" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="#">Giới thiệu</a> |
+        <a href="#">Tải ứng dụng X xuống</a> |
+        <a href="#">Grok</a> |
+        <a href="#">Trung tâm Trợ giúp</a> |
+        <a href="#">Điều khoản Dịch vụ</a> |
+        <a href="#">Chính sách Riêng tư</a> |
+        <a href="#">Chính sách cookie</a> |
+        <a href="#">Khả năng truy cập</a> |
+        <a href="#">Thông tin quảng cáo</a> |
+        <a href="#">Blog</a> |
+        <a href="#">Nghề nghiệp</a> |
+        <a href="#">Tài nguyên thương hiệu</a> |
+        <span>© 2026 X Corp.</span>
+    </footer>
+
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="success-title">Thành công!</h3>
+            <p id="success-message"></p>
+            <button onclick="closeSuccessModal()" class="btn-submit active">OK</button>
         </div>
     </div>
 

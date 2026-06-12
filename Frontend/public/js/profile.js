@@ -19,7 +19,7 @@ function loadPostCounts() {
 // Fetch post data and update counts
 async function loadPostData(postId) {
     try {
-        const response = await fetch(`/api/posts/${postId}`);
+        const response = await fetch(`/posts/${postId}`);
         const result = await response.json();
         
         if (result.success && result.data) {
@@ -93,7 +93,7 @@ async function deletePost(postId) {
 // Toggle like
 async function toggleLike(postId) {
     try {
-        const response = await fetch(`/api/posts/${postId}/like`, {
+        const response = await fetch(`/posts/${postId}/like`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -136,9 +136,96 @@ async function toggleFollow(userId) {
 
 // Edit profile
 function editProfile() {
-    alert('Chức năng chỉnh sửa hồ sơ sẽ được cập nhật sớm!');
-    // TODO: Implement edit profile functionality
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.add('active');
 }
+
+// Close edit profile modal
+function closeEditProfile() {
+    const modal = document.getElementById('edit-profile-modal');
+    modal.classList.remove('active');
+}
+
+// Handle avatar upload
+function editPhoto() {
+    const fileInput = document.getElementById('avatar-file-input');
+    fileInput.click();
+}
+
+// Handle avatar file selection
+function handleAvatarUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const avatarPreview = document.getElementById('avatar-preview');
+            if (avatarPreview.tagName === 'IMG') {
+                avatarPreview.src = e.target.result;
+            } else {
+                // Replace div with img
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.id = 'avatar-preview';
+                avatarPreview.replaceWith(img);
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Save profile changes
+async function saveProfile() {
+    try {
+        const name = document.getElementById('edit-name').value.trim();
+        const bio = document.getElementById('edit-bio').value.trim();
+        const location = document.getElementById('edit-location').value.trim();
+        const website = document.getElementById('edit-website').value.trim();
+
+        if (!name) {
+            alert('Tên không được để trống');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('username', name);
+        formData.append('bio', bio);
+        formData.append('location', location);
+        formData.append('website', website);
+
+        // Check if avatar was changed
+        const avatarFileInput = document.getElementById('avatar-file-input');
+        if (avatarFileInput.files.length > 0) {
+            formData.append('avatar', avatarFileInput.files[0]);
+        }
+
+        const response = await fetch('/api/users/update-profile', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Cập nhật hồ sơ thành công!');
+            closeEditProfile();
+            // Reload page to show updated profile
+            location.reload();
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        alert('Lỗi khi lưu hồ sơ');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('edit-profile-modal');
+    if (e.target === modal) {
+        closeEditProfile();
+    }
+});
 
 // Switch tab
 // Store original posts HTML on page load
@@ -180,7 +267,7 @@ function switchTab(btn) {
 // Load liked posts
 async function loadLikedPosts() {
     try {
-        const response = await fetch(`/api/posts/liked`, {
+        const response = await fetch(`/posts/liked`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -336,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Toggle like on a post
 function togglePostLike(postId, btn) {
-    fetch(`/api/posts/${postId}/like`, {
+    fetch(`/posts/${postId}/like`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -361,7 +448,7 @@ function togglePostLike(postId, btn) {
 
 // Toggle retweet on a post
 function togglePostRetweet(postId, btn) {
-    fetch(`/api/posts/${postId}/retweet`, {
+    fetch(`/posts/${postId}/retweet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -389,7 +476,7 @@ function replyToPost(postId, btn) {
     const content = prompt('Trả lời bài viết:');
     if(!content) return;
     
-    fetch(`/api/posts/${postId}/reply`, {
+    fetch(`/get_posts/${postId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })
