@@ -1,0 +1,7 @@
+Các quyền cơ bản của quản trị viên trong ứng dụng
+    -Quản lí tài khoản (Xem, khóa, xóa)
+    -Quản lí bài viết (Xem, khóa, xóa)
+    -Quản lí bình luận (Xem, khóa, xóa)
+    -Quản lí các yêu cầu khác
+
+-Làm thông báo cho cả bên user và admin:
