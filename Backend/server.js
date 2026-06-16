@@ -27,6 +27,8 @@ import { viewRoute } from './Routes/viewRoute.js';
 import { postRoute } from './Routes/postRoute.js';
 import { interactRoute } from './Routes/interactRoute.js';
 import { searchRoute } from './Routes/searchRoute.js';
+import { notificationRoute } from './Routes/notificationRoute.js';
+import { adminRoute } from './Admin/Routes/adminRoute.js';
 
 fastify.register(connectDB);
 fastify.register(fastifyJWT, {
@@ -63,10 +65,12 @@ fastify.register(viewRoute);
 fastify.register(postRoute);
 fastify.register(interactRoute);
 fastify.register(searchRoute);
+fastify.register(notificationRoute);
+fastify.register(adminRoute);
 
-io.on('Connetion', function(socket){
+io.on('connection', function(socket){
     console.log('connected', socket.id);
-    socket.emit('chat message', function(msg){
+    socket.on('chat message', function(msg){
         console.log(msg);
         io.emit('chat message', msg)
     });

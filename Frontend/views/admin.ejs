@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/admin.css">
+</head>
+<body>
+<div class="wrap">
+  <%- include('_header') %>
+  <div class="main">
+    <div class="feed">
+      <div class="tab-bar">
+        <div class="tabs">
+          <div class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">
+            <span>Tổng quan</span>
+          </div>
+          <div class="tab" data-tab="users" onclick="switchTab('users')">
+            <span>Người dùng</span>
+          </div>
+          <div class="tab" data-tab="posts" onclick="switchTab('posts')">
+            <span>Bài viết</span>
+          </div>
+          <div class="tab" data-tab="comments" onclick="switchTab('comments')">
+            <span>Bình luận</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-tab active" id="tab-dashboard">
+        <div class="admin-section">
+          <div class="admin-row">
+            <span class="admin-row-label">Tổng người dùng</span>
+            <span class="admin-row-value"><%= stats.totalUsers %></span>
+          </div>
+          <div class="admin-row">
+            <span class="admin-row-label">Tổng bài viết</span>
+            <span class="admin-row-value"><%= stats.totalPosts %></span>
+          </div>
+          <div class="admin-row">
+            <span class="admin-row-label">Tổng bình luận</span>
+            <span class="admin-row-value"><%= stats.totalComments %></span>
+          </div>
+        </div>
+        <div class="admin-section">
+          <div class="admin-section-title">Cần xử lý</div>
+          <div class="admin-row">
+            <span class="admin-row-label">Tài khoản bị khóa</span>
+            <span class="admin-row-value admin-warn"><%= stats.lockedUsers %></span>
+          </div>
+          <div class="admin-row">
+            <span class="admin-row-label">Bài viết bị ẩn</span>
+            <span class="admin-row-value admin-warn"><%= stats.hiddenPosts %></span>
+          </div>
+          <div class="admin-row">
+            <span class="admin-row-label">Bình luận bị ẩn</span>
+            <span class="admin-row-value admin-warn"><%= stats.hiddenComments %></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-tab" id="tab-users">
+        <div class="admin-search">
+          <div class="search-title">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+            </div>
+            <input type="text" id="user-search" placeholder="Tìm theo tên hoặc email..." oninput="debounceSearch('users')">
+          </div>
+        </div>
+        <div id="users-list"></div>
+        <div class="admin-pagination" id="users-pagination"></div>
+      </div>
+
+      <div class="admin-tab" id="tab-posts">
+        <div class="admin-search">
+          <div class="search-title">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+            </div>
+            <input type="text" id="post-search" placeholder="Tìm theo nội dung..." oninput="debounceSearch('posts')">
+          </div>
+        </div>
+        <div id="posts-list"></div>
+        <div class="admin-pagination" id="posts-pagination"></div>
+      </div>
+
+      <div class="admin-tab" id="tab-comments">
+        <div id="comments-list"></div>
+        <div class="admin-pagination" id="comments-pagination"></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="right-col-content">
+        <div class="search-box">
+          <div class="search-title">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+            </div>
+            <input type="text" placeholder="Tìm kiếm">
+          </div>
+        </div>
+        <div class="caigithe"></div>
+        <div class="widget">
+          <div class="widget-title">Thống kê hệ thống</div>
+          <div class="trend-item">
+            <div class="trend-cat">Người dùng</div>
+            <div class="trend-name"><%= stats.totalUsers %> tài khoản</div>
+            <div class="trend-count"><%= stats.lockedUsers %> bị khóa</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-cat">Bài viết</div>
+            <div class="trend-name"><%= stats.totalPosts %> bài viết</div>
+            <div class="trend-count"><%= stats.hiddenPosts %> bị ẩn</div>
+          </div>
+          <div class="trend-item">
+            <div class="trend-cat">Bình luận</div>
+            <div class="trend-name"><%= stats.totalComments %> bình luận</div>
+            <div class="trend-count"><%= stats.hiddenComments %> bị ẩn</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-modal-overlay" id="confirm-modal" style="display:none">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <h3 id="modal-title">Xác nhận</h3>
+      <button class="admin-modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"/></svg>
+      </button>
+    </div>
+    <div class="admin-modal-body">
+      <p id="modal-message">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+    </div>
+    <div class="admin-modal-footer">
+      <button class="admin-modal-btn cancel" onclick="closeModal()">Hủy</button>
+      <button class="admin-modal-btn confirm" id="modal-confirm-btn">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-toast-container" id="toast-container"></div>
+
+<script src="/public/js/admin.js"></script>
+</body>
+</html>

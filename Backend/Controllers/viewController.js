@@ -58,6 +58,28 @@ export const getMessage = async function(req, rep){
     }
 }
 
+export const getNotificationPage = async function(req, rep){
+    try{
+        const user = await getCurrentUser(req);
+        if(!user){
+            return rep.redirect('/auth');
+        }
+
+        const unreadCount = await Notification.countDocuments({
+            recipient: user._id,
+            isRead: false
+        });
+
+        return rep.view('notifications.ejs', {
+            user,
+            unreadCount
+        });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình hiển thị trang thông báo');
+    }
+}
+
 export const getHome = async function(req, rep){
     try{
         const user = await getCurrentUser(req);

@@ -1,0 +1,430 @@
+/* ===== Admin Tabs ===== */
+.admin-tab {
+  display: none;
+}
+
+.admin-tab.active {
+  display: block;
+}
+
+/* ===== Dashboard Section ===== */
+.admin-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(47, 51, 54);
+}
+
+.admin-section-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.admin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.admin-row + .admin-row {
+  border-top: 1px solid rgb(47, 51, 54);
+}
+
+.admin-row-label {
+  font-size: 15px;
+  color: rgb(113, 118, 123);
+}
+
+.admin-row-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.admin-row-value.admin-warn {
+  color: #f4212e;
+}
+
+/* ===== Admin Search ===== */
+.admin-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(47, 51, 54);
+}
+
+.admin-search .search-title {
+  background-color: #e8e8e8;
+}
+
+/* ===== List Items (tweet-style) ===== */
+.admin-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(47, 51, 54);
+  cursor: default;
+  transition: background .15s;
+}
+
+.admin-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.admin-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-item-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.admin-item-name {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.admin-item-handle {
+  color: rgb(113, 118, 123);
+  font-size: 15px;
+}
+
+.admin-item-time {
+  color: rgb(113, 118, 123);
+  font-size: 15px;
+}
+
+.admin-item-time::before {
+  content: '· ';
+}
+
+.admin-item-text {
+  font-size: 15px;
+  line-height: 20px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-top: 2px;
+}
+
+.admin-item-ref {
+  font-size: 13px;
+  color: rgb(113, 118, 123);
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-item-ref::before {
+  content: '↳ ';
+}
+
+/* ===== Badges ===== */
+.admin-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+
+.admin-badge.status-active {
+  color: #00ba7c;
+  background: rgba(0, 186, 124, 0.1);
+}
+
+.admin-badge.status-locked {
+  color: #f4212e;
+  background: rgba(244, 33, 46, 0.1);
+}
+
+.admin-badge.status-visible {
+  color: #00ba7c;
+  background: rgba(0, 186, 124, 0.1);
+}
+
+.admin-badge.status-hidden {
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.admin-badge.role-admin {
+  color: #1d9bf0;
+  background: rgba(29, 155, 240, 0.1);
+}
+
+.admin-badge.role-user {
+  color: rgb(113, 118, 123);
+  background: rgba(113, 118, 123, 0.1);
+}
+
+/* ===== Stats (tweet-actions style) ===== */
+.admin-item-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 8px;
+  max-width: 300px;
+}
+
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: rgb(113, 118, 123);
+  padding: 4px 8px;
+  border-radius: 9999px;
+}
+
+.admin-stat svg {
+  width: 1.25em;
+  height: 1.25em;
+  fill: currentColor;
+}
+
+/* ===== Action Buttons (tweet-actions style) ===== */
+.admin-item-actions {
+  display: flex;
+  gap: 0;
+  margin-top: 4px;
+  max-width: 200px;
+}
+
+.admin-act {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34.75px;
+  height: 34.75px;
+  border-radius: 9999px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+  color: rgb(113, 118, 123);
+  padding: 0;
+}
+
+.admin-act svg {
+  width: 1.25em;
+  height: 1.25em;
+  fill: currentColor;
+}
+
+.admin-act.act-toggle:hover {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.admin-act.act-delete:hover {
+  color: #f4212e;
+  background: rgba(244, 33, 46, 0.1);
+}
+
+/* ===== Pagination ===== */
+.admin-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+}
+
+.admin-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.admin-page-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.admin-page-btn.active {
+  background: #000;
+  color: #fff;
+}
+
+.admin-page-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.admin-page-btn:disabled:hover {
+  background: transparent;
+}
+
+/* ===== Modal ===== */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(91, 112, 131, 0.4);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 320px;
+  max-width: 90vw;
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+}
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.admin-modal-header h3 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.admin-modal-close {
+  width: 34.75px;
+  height: 34.75px;
+  border-radius: 9999px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+
+.admin-modal-close:hover {
+  background: rgba(15, 20, 25, 0.1);
+}
+
+.admin-modal-body {
+  padding: 0 16px;
+}
+
+.admin-modal-body p {
+  font-size: 15px;
+  color: rgb(83, 100, 113);
+  line-height: 20px;
+}
+
+.admin-modal-footer {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-modal-btn {
+  padding: 0 24px;
+  height: 44px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  transition: all .2s;
+}
+
+.admin-modal-btn.confirm {
+  background: #f4212e;
+  color: #fff;
+}
+
+.admin-modal-btn.confirm:hover {
+  background: #dc1d28;
+}
+
+.admin-modal-btn.cancel {
+  background: transparent;
+  border: 1px solid rgb(207, 217, 222);
+}
+
+.admin-modal-btn.cancel:hover {
+  background: rgba(15, 20, 25, 0.1);
+}
+
+/* ===== Toast ===== */
+.admin-toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-toast {
+  background: #1d9bf0;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 15px;
+  animation: adminToastIn .3s ease, adminToastOut .3s ease 2.7s;
+}
+
+@keyframes adminToastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes adminToastOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ===== Empty & Loading ===== */
+.admin-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: rgb(113, 118, 123);
+  font-size: 15px;
+}
+
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.admin-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(29, 155, 240, 0.2);
+  border-top-color: #1d9bf0;
+  border-radius: 50%;
+  animation: adminSpin .6s linear infinite;
+}
+
+@keyframes adminSpin {
+  to { transform: rotate(360deg); }
+}
