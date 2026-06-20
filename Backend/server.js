@@ -75,6 +75,14 @@ fastify.register(adminRoute);
 io.on('connection', function(socket){
     console.log('connected', socket.id);
 
+    socket.on('join user', function(data){
+        const { userId } = data;
+
+        if(userId){
+            socket.join(`user:${userId}`);
+        }
+    });
+
     socket.on('join conversation', async function(data){
         try{
             const { conversationId, userId } = data;
@@ -140,7 +148,21 @@ io.on('connection', function(socket){
             message = await Message.findById(message._id)
                 .populate('sender', 'username avatar');
 
+            const updatedConversation = await Conversation.findById(conversationId)
+                .populate('participants', 'username avatar')
+                .populate({
+                    path: 'lastMessage',
+                    populate: {
+                        path: 'sender',
+                        select: 'username avatar'
+                    }
+                });
+
             io.to(conversationId).emit('new message', message);
+
+            updatedConversation.participants.forEach(function(participant){
+                io.to(`user:${participant._id}`).emit('conversation updated', updatedConversation);
+            });
         }catch(err){
             console.log(err);
             socket.emit('chat error', {

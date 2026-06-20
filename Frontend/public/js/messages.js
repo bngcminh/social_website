@@ -3,6 +3,12 @@ const socket = io();
 
 let currentConversationId = null;
 
+socket.on('connect', function(){
+    socket.emit('join user', {
+        userId: currentUserId
+    });
+});
+
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
@@ -117,6 +123,10 @@ socket.on('chat error', function(data){
     alert(data.message || 'Co loi khi chat');
 });
 
+socket.on('conversation updated', function(conversation){
+    upsertConversationItem(conversation);
+});
+
 function renderMessage(message){
     const messagesList = document.getElementById('messages-list');
     const messageDiv = document.createElement('div');
@@ -128,6 +138,69 @@ function renderMessage(message){
     `;
 
     messagesList.appendChild(messageDiv);
+}
+
+function getOtherParticipant(conversation){
+    return conversation.participants.find(function(participant){
+        return String(participant._id) !== String(currentUserId);
+    });
+}
+
+function getConversationPreview(conversation){
+    if(!conversation.lastMessage){
+        return 'Bat dau cuoc tro chuyen...';
+    }
+
+    const prefix = String(conversation.lastMessage.sender?._id) === String(currentUserId) ? 'Ban: ' : '';
+    return prefix + (conversation.lastMessage.content || '[Hinh anh]');
+}
+
+function upsertConversationItem(conversation){
+    const conversationsEl = document.querySelector('.conversations');
+
+    if(!conversationsEl){
+        return;
+    }
+
+    const otherParticipant = getOtherParticipant(conversation);
+
+    if(!otherParticipant){
+        return;
+    }
+
+    const emptyEl = conversationsEl.querySelector('.no-conversations');
+    if(emptyEl){
+        emptyEl.remove();
+    }
+
+    let item = conversationsEl.querySelector(`[data-conversation-id="${conversation._id}"]`);
+
+    if(!item){
+        item = document.createElement('div');
+        item.className = 'conversation-item';
+        item.dataset.conversationId = conversation._id;
+        item.onclick = function(){
+            loadConversation(conversation._id);
+        };
+
+        item.innerHTML = `
+            <div class="conversation-avatar">
+                <div class="avatar"></div>
+            </div>
+            <div class="conversation-info">
+                <div class="conversation-name"></div>
+                <div class="conversation-preview">
+                    <span class="message-text"></span>
+                </div>
+            </div>
+        `;
+    }
+
+    item.querySelector('.avatar').textContent = otherParticipant.username.substring(0, 1).toUpperCase();
+    item.querySelector('.conversation-name').textContent = otherParticipant.username;
+    item.querySelector('.message-text').textContent = getConversationPreview(conversation).substring(0, 50);
+
+    conversationsEl.prepend(item);
 }
 
 function setupMessageInput() {
