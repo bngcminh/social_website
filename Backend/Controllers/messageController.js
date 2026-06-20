@@ -1,5 +1,6 @@
 import Conversation from '../Models/Coversation.js';
 import Message from '../Models/Message.js';
+import User from '../Models/User.js';
 
 export const getConversations = async function(req, rep){
     try{
