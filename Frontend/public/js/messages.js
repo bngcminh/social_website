@@ -1,8 +1,98 @@
 // Messages Page JavaScript
+const socket = io();
 
 let currentConversationId = null;
 let autoRefreshInterval = null;
 
+async function startConversation(receiverId){
+    const response = await fetch('/conversations', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ receiverId })
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+        alert(result.message);
+        return;
+    }
+
+    currentConversationId = result.conversation._id;
+
+    socket.emit('join conversation', {
+        conversationId: currentConversationId,
+        userId: currentUserId
+    });
+
+    await loadMessages(currentConversationId);
+}
+
+async function loadMessages(conversationId){
+    const response = await fetch(`/conversations/${conversationId}/messages`);
+    const result = await response.json();
+
+    if(!result.success){
+        alert(result.message);
+        return;
+    }
+
+    const messagesList = document.getElementById('messages-list');
+    messagesList.innerHTML = '';
+
+    result.messages.forEach(function(message){
+        renderMessage(message);
+    });
+
+    messagesList.scrollTop = messagesList.scrollHeight;
+}
+
+function sendMessage(){
+    const input = document.getElementById('message-input');
+    const content = input.value.trim();
+
+    if(!content || !currentConversationId){
+        return;
+    }
+
+    socket.emit('send message', {
+        conversationId: currentConversationId,
+        senderId: currentUserId,
+        content
+    });
+
+    input.value = '';
+}
+
+socket.on('new message', function(message){
+    if(message.conversation === currentConversationId){
+        renderMessage(message);
+
+        const messagesList = document.getElementById('messages-list');
+        messagesList.scrollTop = messagesList.scrollHeight;
+    }
+});
+
+socket.on('chat error', function(data){
+    alert(data.message);
+});
+
+function renderMessage(message){
+    const messagesList = document.getElementById('messages-list');
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = message.sender._id === currentUserId ? 'message mine' : 'message';
+
+    messageDiv.innerHTML = `
+        <div class="message-sender">${message.sender.username}</div>
+        <div class="message-content">${message.content}</div>
+        <div class="message-time">${new Date(message.createdAt).toLocaleTimeString()}</div>
+    `;
+
+    messagesList.appendChild(messageDiv);
+}
 // Load conversation
 async function loadConversation(conversationId) {
     try {

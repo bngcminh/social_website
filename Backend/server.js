@@ -27,6 +27,9 @@ import { viewRoute } from './Routes/viewRoute.js';
 import { postRoute } from './Routes/postRoute.js';
 import { interactRoute } from './Routes/interactRoute.js';
 import { searchRoute } from './Routes/searchRoute.js';
+import { messageRoute } from './Routes/messageRoute.js';
+import Conversation from './Models/Coversation.js';
+import Message from './Models/Message.js';
 import { notificationRoute } from './Routes/notificationRoute.js';
 import { adminRoute } from './Admin/Routes/adminRoute.js';
 
@@ -65,14 +68,89 @@ fastify.register(viewRoute);
 fastify.register(postRoute);
 fastify.register(interactRoute);
 fastify.register(searchRoute);
+fastify.register(messageRoute);
 fastify.register(notificationRoute);
 fastify.register(adminRoute);
 
 io.on('connection', function(socket){
     console.log('connected', socket.id);
-    socket.on('chat message', function(msg){
-        console.log(msg);
-        io.emit('chat message', msg)
+
+    socket.on('join conversation', async function(data){
+        try{
+            const { conversationId, userId } = data;
+
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: userId
+            });
+
+            if(!conversation){
+                socket.emit('chat error', {
+                    message: 'Không có quyền vào phòng chat này'
+                });
+                return;
+            }
+
+            socket.join(conversationId);
+
+            socket.emit('joined conversation', {
+                conversationId
+            });
+        }catch(err){
+            console.log(err);
+            socket.emit('chat error', {
+                message: 'Có lỗi khi vào phòng chat'
+            });
+        }
+    });
+
+    socket.on('send message', async function(data){
+        try{
+            const { conversationId, senderId, content } = data;
+
+            if(!content || !content.trim()){
+                socket.emit('chat error', {
+                    message: 'Tin nhắn không được để trống'
+                });
+                return;
+            }
+
+            const conversation = await Conversation.findOne({
+                _id: conversationId,
+                participants: senderId
+            });
+
+            if(!conversation){
+                socket.emit('chat error', {
+                    message: 'Không có quyền gửi tin nhắn'
+                });
+                return;
+            }
+
+            let message = await Message.create({
+                conversation: conversationId,
+                sender: senderId,
+                content: content.trim()
+            });
+
+            await Conversation.findByIdAndUpdate(conversationId, {
+                lastMessage: message._id
+            });
+
+            message = await Message.findById(message._id)
+                .populate('sender', 'username avatar');
+
+            io.to(conversationId).emit('new message', message);
+        }catch(err){
+            console.log(err);
+            socket.emit('chat error', {
+                message: 'Có lỗi khi gửi tin nhắn'
+            });
+        }
+    });
+
+    socket.on('disconnect', function(){
+        console.log('disconnected', socket.id);
     });
 });
 
