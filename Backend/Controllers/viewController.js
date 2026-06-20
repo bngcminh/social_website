@@ -48,9 +48,26 @@ export const getAuth = async function(req, rep){
 export const getMessage = async function(req, rep){
     try{
         const user = await getCurrentUser(req);
+        if(!user){
+            return rep.redirect('/auth');
+        }
+
+        const conversations = await Conversation.find({
+            participants: user._id
+        })
+        .populate('participants', 'username avatar')
+        .populate({
+            path: 'lastMessage',
+            populate: {
+                path: 'sender',
+                select: 'username avatar'
+            }
+        })
+        .sort({ updatedAt: -1 });
+
         return rep.view('messages.ejs', { 
             user,
-            conversations: []
+            conversations
         });
     }catch (err) {
         console.log(err);

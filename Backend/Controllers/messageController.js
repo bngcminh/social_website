@@ -10,7 +10,10 @@ export const getConversations = async function(req, rep){
         .populate('participants', 'username avatar')
         .populate({
             path: 'lastMessage',
-            select: 'username avatar'
+            populate: {
+                path: 'sender',
+                select: 'username avatar'
+            }
         })
         .sort({ createdAt: -1 });
         rep.send({
@@ -25,21 +28,23 @@ export const getConversations = async function(req, rep){
 
 export const createConversation = async function(req, rep){
     try{
-        const recieverId = req.params.recieverId;
-        if(!recieverId || recieverId === req.user.id){
+        const receiverId = req.body.receiverId;
+        if(!receiverId || receiverId === req.user.id){
             return rep.code(400).send({
-                success: false
+                success: false,
+                message: 'Thieu receiverId'
             });
         }
-        const reciever = await User.findById(recieverId);
-        if(!reciever){
+        const receiver = await User.findById(receiverId);
+        if(!receiver){
             return rep.code(400).send({
-                success: false
+                success: false,
+                message: 'Nguoi dung khong ton tai'
             });
         }
         let conversation = await Conversation.findOne({
             participants: {
-                $all: [req.user.id, recieverId],
+                $all: [req.user.id, receiverId],
                 $size: 2
             }
         })
@@ -52,9 +57,9 @@ export const createConversation = async function(req, rep){
             });
         }
         conversation = await Conversation.create({
-            participants: [req.user.id, recieverId]
+            participants: [req.user.id, receiverId]
         });
-        conversation = await Conversation.find(conversation._id)
+        conversation = await Conversation.findById(conversation._id)
             .populate('participants', 'username avatar')
             .populate('lastMessage')
         return rep.send({
@@ -85,7 +90,7 @@ export const getMessage = async function(req, rep){
             conversation: conversationId
         })
         .populate('sender', 'username avatar')
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: 1 });
         return rep.send({
             success: true,
             messages
