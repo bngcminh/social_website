@@ -20,7 +20,24 @@ function loadPostCounts() {
 async function loadPostData(postId) {
     try {
         const response = await fetch(`/posts/${postId}`);
-        const result = await response.json();
+        const responseText = await response.text();
+        let result = {};
+
+        if (responseText) {
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                result = {
+                    success: response.ok,
+                    message: responseText
+                };
+            }
+        } else {
+            result = {
+                success: response.ok,
+                message: response.ok ? 'cập nhật hồ sơ thành công' : 'Không thấy cập nhật hồ sơ'
+            };
+        }
         
         if (result.success && result.data) {
             const post = result.data;
@@ -203,9 +220,26 @@ async function saveProfile() {
             body: formData
         });
 
-        const result = await response.json();
+        const responseText = await response.text();
+        let result = {};
 
-        if (result.success) {
+        if (responseText) {
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                result = {
+                    success: response.ok,
+                    message: responseText
+                };
+            }
+        } else {
+            result = {
+                success: response.ok,
+                message: response.ok ? 'Cập nhật hồ sơ thành công' : 'Không thể cập nhật hồ sơ'
+            };
+        }
+
+        if (response.ok && result.success) {
             alert('Cập nhật hồ sơ thành công!');
             closeEditProfile();
             // Reload page to show updated profile
@@ -215,6 +249,7 @@ async function saveProfile() {
         }
     } catch (error) {
         console.error('Error saving profile:', error);
+        return;
         alert('Lỗi khi lưu hồ sơ');
     }
 }
