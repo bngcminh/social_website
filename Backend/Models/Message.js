@@ -13,10 +13,6 @@ const messageSchema = new mongoose.Schema({
     },
     content: String,
     image: [{ type: String }],
-    isSeen: {
-        type: Boolean,
-        default: false
-    }
 }, { timestamps: true });
 
 const Message = mongoose.model('Message', messageSchema);
