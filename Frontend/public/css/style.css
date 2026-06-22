@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family:  Arial, Helvetica, sans-serif;
+  font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /*sửa lại font chữ*/
   color: var(--color-text-primary);
 }
 
