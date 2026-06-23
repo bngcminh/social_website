@@ -112,6 +112,22 @@ export const createComment = async function(req, rep){
     }
 }
 
+export const getComments = async function(req, rep){
+    try{
+        const postId = req.params.postId;
+        const comments = await Comment.find({ post: postId, parentComment: null })
+            .populate('author', 'username avatar')
+            .sort({ createdAt: -1 });
+
+        return rep.send({
+            comments
+        });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình lấy bình luận');
+    }
+}
+
 export const editComment = async function(req, rep){
     try{
         const commentId = req.params.commentId;
@@ -146,7 +162,7 @@ export const editComment = async function(req, rep){
 
         comment.content = content;
         comment.image = image;
-        await content.save();
+        await comment.save();
 
         return rep.send({
             message: 'Chỉnh sửa bình luận thành công',
@@ -169,14 +185,14 @@ export const deleteComment = async function(req, rep){
         }
 
         const del = await Comment.deleteMany({
-            $or: {
-                _id: commentId,
-                parentComment: commentId 
-            }
+            $or: [
+                { _id: commentId },
+                { parentComment: commentId }
+            ]
         });
 
         await Post.findByIdAndUpdate(
-            commentId,
+            comment.post,
             { $inc: { commentCount: -del.deletedCount } },
             { new: true }
         );

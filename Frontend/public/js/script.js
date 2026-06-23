@@ -25,6 +25,9 @@ async function loadPosts() {
 }
 
 async function loadFollows() {
+  const followList = document.getElementById('follow-list');
+  if(!followList) return;
+
   try {
     const response = await fetch('/api/users/suggestions');
     const result = await response.json();
@@ -33,11 +36,11 @@ async function loadFollows() {
       follows = result.data;
       renderFollows();
     } else {
-      document.getElementById('follow-list').innerHTML = '<p style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Không có gợi ý nào</p>';
+      followList.innerHTML = '<p style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Không có gợi ý nào</p>';
     }
   } catch (err) {
     console.error('Lỗi khi load suggestions:', err);
-    document.getElementById('follow-list').innerHTML = '<p style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Lỗi khi tải dữ liệu</p>';
+    followList.innerHTML = '<p style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Lỗi khi tải dữ liệu</p>';
   }
 }
 
@@ -49,12 +52,28 @@ function renderFeed(){
     const clone=template.content.cloneNode(true);
     const tweet=clone.querySelector('.tweet');
     tweet.id='tw'+t._id;
+    tweet.style.cursor='pointer';
+    tweet.addEventListener('click', (e)=>{
+      if(e.target.closest('.tweet-actions')) return;
+      if(window.location.pathname.startsWith('/post/')) return;
+      window.location.href = `/post/${t._id}`;
+    });
+
     clone.querySelector('.avatar').style.background=t.color || '#1d9bf0';
     clone.querySelector('.avatar').textContent=t.author?.username?.charAt(0).toUpperCase() || 'U';
+    clone.querySelector('.avatar').style.cursor='pointer';
+    clone.querySelector('.avatar').onclick=(e)=>{
+      e.stopPropagation();
+      window.location.href=`/profile/${t.author?.username}`;
+    };
+
     clone.querySelector('.tweet-name').textContent=t.author?.username || 'Anonymous';
     clone.querySelector('.tweet-handle').textContent='@' + (t.author?.username || 'user');
     clone.querySelector('.tweet-name').style.cursor='pointer';
-    clone.querySelector('.tweet-name').onclick=()=>window.location.href=`/profile/${t.author?.username}`;   
+    clone.querySelector('.tweet-name').onclick=(e)=>{
+      e.stopPropagation();
+      window.location.href=`/profile/${t.author?.username}`;
+    };
     
     // Calculate time ago
     const createdAt = new Date(t.createdAt);
@@ -124,7 +143,6 @@ function toggleLike(id){
   const t=tweets.find(x=>x._id===id);
   if(!t) return;
   
-  // Call API
   fetch(`/posts/${id}/like`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -138,15 +156,14 @@ function toggleLike(id){
     return resp.json();
   })
   .then(data => {
-    if(data.success){
-      const btn=document.getElementById('lk'+id);
-      const countEl=btn.querySelector('.count');
-      countEl.textContent=fmt(data.likeCount);
-      btn.classList.remove('liked');
-      if(data.liked) btn.classList.add('liked');
-      t.likeCount = data.likeCount;
-      t.liked = data.liked;
-    }
+    if(!data) return;
+    const btn=document.getElementById('lk'+id);
+    const countEl=btn.querySelector('.count');
+    countEl.textContent=fmt(data.likeCount);
+    btn.classList.remove('liked');
+    if(data.liked) btn.classList.add('liked');
+    t.likeCount = data.likeCount;
+    t.liked = data.liked;
   })
   .catch(err => console.error('Error:', err));
 }
@@ -155,8 +172,7 @@ function toggleRT(id){
   const t=tweets.find(x=>x._id===id);
   if(!t) return;
   
-  // Call API
-  fetch(`/get_posts/${id}/retweet`, {
+  fetch(`/posts/${id}/retweet`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({})
@@ -172,10 +188,10 @@ function toggleRT(id){
     if(data.success){
       const btn=document.getElementById('rt'+id);
       const countEl=btn.querySelector('.count');
-      countEl.textContent=fmt(data.retpostCount);
+      countEl.textContent=fmt(data.repostCount);
       btn.classList.remove('retweeted');
       if(data.retweeted) btn.classList.add('retweeted');
-      t.retpostCount = data.retpostCount;
+      t.retpostCount = data.repostCount;
       t.retweeted = data.retweeted;
     }
   })
@@ -277,17 +293,20 @@ if(composeInput) {
 }
 
 // Handle file input change
-document.getElementById('file-input').addEventListener('change', function(e){
-  const file = e.target.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(event){
-      document.getElementById('preview-img').src = event.target.result;
-      document.getElementById('image-preview').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  }
-});
+const fileInput = document.getElementById('file-input');
+if(fileInput) {
+  fileInput.addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(event){
+        document.getElementById('preview-img').src = event.target.result;
+        document.getElementById('image-preview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
 
 function clearPreview(){
   document.getElementById('file-input').value = '';
@@ -356,5 +375,7 @@ document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',fun
   this.classList.add('active');
 }));
 
-loadFollows();
-loadPosts();
+if(document.getElementById('feed-list')){
+  loadFollows();
+  loadPosts();
+}

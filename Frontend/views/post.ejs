@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài viết - Twitter/X UI Clone</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link rel="stylesheet" href="/public/css/profile.css">
+</head>
+<body>
+<div class="wrap">
+  <%- include('_header') %>
+
+  <div class="main">
+    <div class="feed">
+      <div class="profile-header">
+        <div class="profile-header-top">
+          <a href="/" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 11H7.83l5.59-5.59L12 3l-9 9 9 9 1.41-1.41L7.83 13H19v-2z"></path>
+            </svg>
+          </a>
+          <div class="profile-header-info" onclick="history.back()">
+            <h2 class="profile-username">Bài viết</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="tweet detail" data-post-id="<%= post.id %>">
+
+        <% if (post.repostOf) { %>
+          <div class="repost-label">🔁 Đã đăng lại</div>
+        <% } %>
+        <div class="tweet-header">
+          <div class="avatar" onclick="window.location.href='/profile/<%= post.author.username %>'" style="cursor:pointer"><%= post.author.username.substring(0,1).toUpperCase() %></div>
+          <div class="tweet-meta">
+            <div class="tweet-user-post">
+              <span class="tweet-name" onclick="window.location.href='/profile/<%= post.author.username %>'" style="cursor:pointer"><%= post.author.username %></span>
+              <span class="tweet-handle">@<%= post.author.username %></span>
+            </div>
+            <div class="tweet-options" style="position:relative">
+              <svg onclick="togglePostMenu(this)" style="cursor:pointer" viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+              <div id="post-menu" style="display:none;position:absolute;right:0;top:24px;background:#000;border:1px solid #2f3336;border-radius:12px;min-width:160px;z-index:99;overflow:hidden">
+                <div class="comment-menu-item" onclick="editPostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Chỉnh sửa</div>
+                <div class="comment-menu-item" onclick="deletePostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Xóa</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tweet-body">
+          
+
+          <div class="tweet-text"><%= post.content %></div>
+
+          <% if (post.media && post.media.length > 0) { %>
+            <div class="tweet-image" style="margin-top:12px;border-radius:16px;overflow:hidden;max-width:100%">
+              <% post.media.forEach(m => { %>
+                <% if (m.type === 'image') { %>
+                  <img src="<%= m.url %>" style="width:100%;display:block;border-radius:16px;border:1px solid rgb(113, 118, 122);">
+                <% } else { %>
+                  <video src="<%= m.url %>" style="width:100%;display:block;border-radius:16px" controls></video>
+                <% } %>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <div class="tweet-timestamp" style="margin-top:12px;color:#71767b;font-size:14px">
+            <%= new Date(post.createdAt).toLocaleString('vi-VN') %>
+            <% if (post.isEdited) { %> · Đã chỉnh sửa <% } %>
+          </div>
+
+
+          <div class="tweet-actions tweet-actions-post">
+            <button class="act reply" data-action="reply">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"></path></g></svg>
+              <span class="count"><%= post.commentCount %></span>
+            </button>
+            <button class="act retweet" data-action="retweet">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>
+              <span class="count"><%= post.repostCount %></span>
+            </button>
+            <button class="act like" data-action="like">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>
+              <span class="count"><%= post.likeCount %></span>
+            </button>
+            <button class="act views" data-action="views">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></g></svg>
+              <span class="count"><%= post.viewCount %></span>
+            </button>
+            <button class="act views" data-action="views">
+              <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- chỗ này để sau làm comment list -->
+      <div class="comment-section" data-post-id="<%= post.id %>">
+        <div class="comment-input">
+          <div class="avatar-post">
+            <div class="avatar" onclick="window.location.href='/profile/<%= user.username %>'" style="cursor:pointer"><%= user ? user.username.substring(0,1).toUpperCase() : 'U' %></div>
+          </div>
+          <div class="comment-input-field">
+            <input type="text" placeholder="Viết bình luận..." id="comment-input-field">
+            <div id="comment-image-preview" style="display:none;margin-top:8px;position:relative">
+              <img id="comment-preview-img" style="max-width:100%;border-radius:12px;">
+              <button onclick="clearCommentImage()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer">✕</button>
+            </div>
+            <div class="comment-actions">
+              <label for="comment-image-input" style="cursor:pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M5 21h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2m0-2v-1.59l3-3 1.29 1.29c.39.39 1.02.39 1.41 0l5.29-5.29 3 3V19h-14ZM19 5v5.59L16.71 8.3a.996.996 0 0 0-1.41 0l-5.29 5.29-1.29-1.29a.996.996 0 0 0-1.41 0l-2.29 2.29V5h14Z"></path>
+                </svg>
+              </label>
+              <input type="file" id="comment-image-input" accept="image/*" style="display:none">
+              <button id="comment-submit-btn"><span>Bình luận</span></button>
+            </div>
+          </div>
+        </div>
+        <div id="comment-list"></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="right-col-content">
+        <div class="search-box">
+          <div class="search-title">
+            <div class="search-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
+            </div>
+            <input type="text" placeholder="Tìm kiếm">
+          </div>
+        </div>
+        <div class="caigithe"></div>
+        <div class="widget">
+          <div class="widget-title">Gợi ý theo dõi</div>
+          <div id="follow-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/public/js/script.js"></script>
+<script src="/public/js/script.js"></script>
+<script>
+const postId = '<%= post.id %>';
+
+document.addEventListener('DOMContentLoaded', function(){
+
+  // --- 1. XỬ LÝ LIKE ---
+  document.querySelector('.act.like').addEventListener('click', function(e){
+    e.stopPropagation();
+    fetch(`/posts/${postId}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    })
+    .then(r => r.json())
+    .then(data => {
+      this.querySelector('.count').textContent = data.likeCount;
+      this.classList.toggle('liked', data.liked);
+    })
+    .catch(err => console.error('Error liking post:', err));
+  });
+
+  // --- 2. XỬ LÝ RETWEET ---
+  document.querySelector('.act.retweet').addEventListener('click', function(e){
+    e.stopPropagation();
+    fetch(`/posts/${postId}/retweet`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      this.querySelector('.count').textContent = data.repostCount ?? data.retpostCount;
+      this.classList.toggle('retweeted', data.retweeted);
+    })
+    .catch(err => console.error('Error retweeting:', err));
+  });
+
+  // --- 3. ĐỊNH NGHĨA BIẾN CHO COMMENT ---
+  const commentInput = document.getElementById('comment-input-field');
+  const commentSubmit = document.getElementById('comment-submit-btn');
+  const commentImageInput = document.getElementById('comment-image-input');
+
+  // --- 4. PREVIEW ẢNH COMMENT ---
+  commentImageInput.addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        document.getElementById('comment-preview-img').src = ev.target.result;
+        document.getElementById('comment-image-preview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // --- 5. GỬI COMMENT (Bao gồm cả Chữ & Ảnh) ---
+  commentSubmit.addEventListener('click', function(){
+    const content = commentInput.value.trim();
+    const imageFile = commentImageInput.files[0];
+    if(!content && !imageFile) return;
+
+    const formData = new FormData();
+    if(content) formData.append('content', content);
+    if(imageFile) formData.append('file', imageFile);
+
+    fetch(`/posts/${postId}/comments`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+      if(data.comment){
+        commentInput.value = '';
+        clearCommentImage();
+        
+        // Tăng count của nút reply thêm 1
+        const replyBtn = document.querySelector('.act.reply');
+        if(replyBtn) {
+          const countEl = replyBtn.querySelector('.count');
+          countEl.textContent = parseInt(countEl.textContent || 0) + 1;
+        }
+        
+        // Tải lại danh sách comment mới
+        loadComments();
+      }
+    })
+    .catch(err => console.error('Error submitting comment:', err));
+  });
+
+  // --- 6. LOAD COMMENTS LẦN ĐẦU KHI VÀO TRANG ---
+  loadComments();
+});
+
+// --- Kênh hàm bổ trợ bên ngoài DOMContentLoaded ---
+
+function clearCommentImage(){
+  const input = document.getElementById('comment-image-input');
+  const preview = document.getElementById('comment-image-preview');
+  const img = document.getElementById('comment-preview-img');
+  
+  if(input) input.value = '';
+  if(preview) preview.style.display = 'none';
+  if(img) img.src = '';
+}
+
+async function loadComments(){
+  try {
+    const res = await fetch(`/posts/${postId}/comments`);
+    const data = await res.json();
+    const list = document.getElementById('comment-list');
+    if(!list) return;
+    
+    list.innerHTML = '';
+
+    if(!data.comments || data.comments.length === 0){
+      list.innerHTML = '<p style="padding:16px;color:#71767b">Chưa có bình luận nào</p>';
+      return;
+    }
+
+  data.comments.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'tweet';
+    el.innerHTML = `
+      <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
+      <div class="tweet-body">
+        <div class="tweet-meta">
+          <div class="tweet-user-post-cmt">
+            <span class="tweet-name">${c.author?.username || 'Anonymous'}</span>
+            <span class="tweet-handle">@${c.author?.username || 'user'}</span>
+            <span class="tweet-time">· </span>
+          </div>
+          <div class="tweet-options" style="position:relative">
+            <svg onclick="toggleCommentMenu(this)" style="cursor:pointer" viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+            <div class="comment-menu" style="display:none;position:absolute;right:0;top:24px;background:#000;border:1px solid #2f3336;border-radius:12px;min-width:160px;z-index:99;overflow:hidden">
+              <div class="comment-menu-item" onclick="editCommentPrompt('${c._id}')" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Chỉnh sửa</div>
+              <div class="comment-menu-item" onclick="deleteCommentAction('${c._id}')" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Xóa</div>
+            </div>
+          </div>
+        </div>
+        <div class="tweet-text">${c.content || ''}</div>
+        ${c.image ? `<img src="${c.image}" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
+      </div>
+    `;
+    list.appendChild(el);
+  });
+  } catch (err) {
+    console.error('Error loading comments:', err);
+  }
+}
+function toggleCommentMenu(svg){
+  const menu = svg.nextElementSibling;
+  const isOpen = menu.style.display === 'block';
+  document.querySelectorAll('.comment-menu').forEach(m => m.style.display = 'none');
+  menu.style.display = isOpen ? 'none' : 'block';
+}
+
+async function deleteCommentAction(commentId){
+  if(!confirm('Xóa bình luận này?')) return;
+  const res = await fetch(`/comments/${commentId}`, { method: 'DELETE' });
+  if(res.ok){
+    loadComments();
+    const replyBtn = document.querySelector('.act.reply');
+    if(replyBtn){
+      const countEl = replyBtn.querySelector('.count');
+      countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+    }
+  }
+}
+
+function editCommentPrompt(commentId){
+  const content = prompt('Nhập nội dung mới:');
+  if(!content) return;
+  const formData = new FormData();
+  formData.append('content', content);
+  fetch(`/comments/${commentId}`, {
+    method: 'PUT',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(data.comment) loadComments();
+  });
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.tweet-options')){
+    document.querySelectorAll('.comment-menu').forEach(m => m.style.display = 'none');
+    const postMenu = document.getElementById('post-menu');
+    if(postMenu) postMenu.style.display = 'none';
+  }
+});
+function togglePostMenu(svg){
+  const menu = document.getElementById('post-menu');
+  const isOpen = menu.style.display === 'block';
+  menu.style.display = isOpen ? 'none' : 'block';
+}
+
+async function deletePostAction(){
+  if(!confirm('Xóa bài viết này?')) return;
+  const res = await fetch(`/delete_post/${postId}`, { method: 'DELETE' });
+  if(res.ok){
+    window.location.href = '/';
+  } else {
+    alert('Có lỗi khi xóa bài viết');
+  }
+}
+
+function editPostAction(){
+  const content = prompt('Nhập nội dung mới:');
+  if(!content) return;
+  const formData = new FormData();
+  formData.append('content', content);
+  fetch(`/edit_post/${postId}`, {
+    method: 'PUT',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(data.post){
+      document.querySelector('.tweet-text').textContent = data.post.content;
+    }
+  });
+}
+</script>
+</body>
+</html>

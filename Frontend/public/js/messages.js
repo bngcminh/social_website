@@ -60,6 +60,10 @@ async function loadMessages(conversationId){
     const messagesList = document.getElementById('messages-list');
     messagesList.innerHTML = '';
 
+    const heheDiv = document.createElement('div');
+    heheDiv.className = 'heheboy';
+    messagesList.appendChild(heheDiv);
+
     result.messages.forEach(function(message){
         renderMessage(message);
     });

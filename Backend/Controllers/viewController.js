@@ -14,6 +14,7 @@ function formPostData(post){
         likeCount: post.likeCount,
         commentCount: post.commentCount,
         viewsCount: post.viewsCount,
+        viewCount: post.viewsCount,
         repostCount: post.repostCount,
         repostOf: post.repostOf,
         isEdited: post.isEdited,
@@ -169,6 +170,8 @@ export const getHomePosts = async function(req, rep){
 export const getPostDetail = async function(req, rep){
     try{
         const postId = req.params.postId;
+        const user = await getCurrentUser(req);
+
         const post = await Post.findByIdAndUpdate(
             postId,
             { $inc: { viewsCount: 1 } },
@@ -188,7 +191,10 @@ export const getPostDetail = async function(req, rep){
             return rep.code(404).send('Khong tim thay bai viet');
         }
 
-        return rep.send({ post: formPostData() });
+        return rep.view('post.ejs', {
+            user,
+            post: formPostData(post)
+        });
     }catch(err){
         console.log(err);
         return rep.code(500).send('Co loi trong qua trinh lay bai viet nay');

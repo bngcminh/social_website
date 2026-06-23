@@ -76,7 +76,7 @@
     </div>
     <div class="sidebar-bottom">
       <% if (user) { %>
-        <button class="user-btn">
+        <button class="user-btn" onclick="toggleUserMenu(event)">
           <div class="avatar"><%= user.username.substring(0, 1).toUpperCase() %></div>
           <div class="user-info">
             <div class="user-name"><%= user.username %></div>
@@ -86,6 +86,14 @@
             <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
           </div>
         </button>
+        <div class="user-menu" id="user-menu" style="display:none">
+          <div class="user-menu-item">
+            <span>Thêm tài khoản</span>
+          </div>
+          <div class="user-menu-item logout" onclick="handleLogout()">
+            <span>Đăng xuất @<%= user.username %></span>
+          </div>
+        </div>
       <% } else { %>
         <a href="/auth" class="tweet-btn" style="width:100%">
           <span>Đăng Nhập</span>
@@ -111,4 +119,19 @@
         })
         .catch(function(){});
 })();
+function toggleUserMenu(e){
+  e.stopPropagation();
+  const menu = document.getElementById('user-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+// click ra ngoài thì đóng
+document.addEventListener('click', function(){
+  const menu = document.getElementById('user-menu');
+  if(menu) menu.style.display = 'none';
+});
+
+async function handleLogout(){
+  window.location.href = '/logout';
+}
 </script>

@@ -410,8 +410,8 @@
   gap: 8px;
 }
 .heheboy{
-  height: 84px;
-  min-height: 84px;
+  height: 70px;
+  min-height: 70px;
 }
 .messages-list::-webkit-scrollbar {
   width: 8px;
