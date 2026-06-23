@@ -5,59 +5,6 @@ function fmt(n) {
     return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
 }
 
-// Load and display post counts
-function loadPostCounts() {
-    const posts = document.querySelectorAll('.post');
-    posts.forEach(post => {
-        const postId = post.getAttribute('data-post-id');
-        if (postId) {
-            loadPostData(postId);
-        }
-    });
-}
-
-// Fetch post data and update counts
-async function loadPostData(postId) {
-    try {
-        const response = await fetch(`/posts/${postId}`);
-        const responseText = await response.text();
-        let result = {};
-
-        if (responseText) {
-            try {
-                result = JSON.parse(responseText);
-            } catch (parseError) {
-                result = {
-                    success: response.ok,
-                    message: responseText
-                };
-            }
-        } else {
-            result = {
-                success: response.ok,
-                message: response.ok ? 'cập nhật hồ sơ thành công' : 'Không thấy cập nhật hồ sơ'
-            };
-        }
-        
-        if (result.success && result.data) {
-            const post = result.data;
-            const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-            
-            if (postElement) {
-                const buttons = postElement.querySelectorAll('.tweet-actions button');
-                if (buttons.length >= 4) {
-                    buttons[0].querySelector('.count').textContent = fmt(post.commentCount || 0);
-                    buttons[1].querySelector('.count').textContent = fmt(post.retpostCount || 0);
-                    buttons[2].querySelector('.count').textContent = fmt(post.likeCount || 0);
-                    buttons[3].querySelector('.count').textContent = fmt(post.viewsCount || 0);
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error loading post data:', error);
-    }
-}
-
 // Toggle post menu
 function togglePostMenu(btn) {
     const dropdown = btn.nextElementSibling;
@@ -107,30 +54,6 @@ async function deletePost(postId) {
     }
 }
 
-// Toggle like
-async function toggleLike(postId) {
-    try {
-        const response = await fetch(`/posts/${postId}/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            const btn = document.querySelector(`[data-post-id="${postId}"] .action-btn`);
-            if (data.liked) {
-                btn.classList.add('liked');
-            } else {
-                btn.classList.remove('liked');
-            }
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 // Toggle follow
 async function toggleFollow(userId) {
     try {
@@ -142,9 +65,16 @@ async function toggleFollow(userId) {
         });
 
         if (response.ok) {
+            const data = await response.json();
+            
             const btn = document.querySelector('.follow-btn');
-            btn.classList.toggle('following');
-            btn.textContent = btn.classList.contains('following') ? 'Đang theo dõi' : 'Theo dõi';
+            btn.classList.toggle('following', data.following);
+            btn.textContent = data.following ? 'Đang theo dõi' : 'Theo dõi';
+
+            const followerEl = document.querySelector('.stat-followers .stat-count');
+            const followingEl = document.querySelector('.stat-following .stat-count');
+            if(followerEl) followerEl.textContent = data.followersCount;
+            if(followingEl) followingEl.textContent = data.followingCount;
         }
     } catch (error) {
         console.error('Error:', error);
@@ -209,7 +139,6 @@ async function saveProfile() {
         formData.append('location', location);
         formData.append('website', website);
 
-        // Check if avatar was changed
         const avatarFileInput = document.getElementById('avatar-file-input');
         if (avatarFileInput.files.length > 0) {
             formData.append('avatar', avatarFileInput.files[0]);
@@ -220,37 +149,30 @@ async function saveProfile() {
             body: formData
         });
 
-        const responseText = await response.text();
         let result = {};
-
-        if (responseText) {
-            try {
-                result = JSON.parse(responseText);
-            } catch (parseError) {
-                result = {
-                    success: response.ok,
-                    message: responseText
-                };
-            }
-        } else {
-            result = {
-                success: response.ok,
-                message: response.ok ? 'Cập nhật hồ sơ thành công' : 'Không thể cập nhật hồ sơ'
-            };
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            result = {};
         }
 
-        if (response.ok && result.success) {
+        if (response.ok) {
             alert('Cập nhật hồ sơ thành công!');
-            closeEditProfile();
-            // Reload page to show updated profile
-            location.reload();
+            const modal = document.getElementById('edit-profile-modal');
+            if(modal){
+                modal.classList.remove('active');
+            }
+            if(result.user && result.user.username){
+                window.location.href = `/profile/${encodeURIComponent(result.user.username)}`;
+            }else{
+                location.reload();
+            }
         } else {
-            alert('Lỗi: ' + result.message);
+            alert('Lỗi: ' + (result.message || 'Không thể cập nhật hồ sơ'));
         }
     } catch (error) {
         console.error('Error saving profile:', error);
-        return;
-        alert('Lỗi khi lưu hồ sơ');
+        alert('Không thể kết nối tới server để cập nhật hồ sơ');
     }
 }
 
@@ -272,7 +194,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if(profilePosts) {
         originalPostsHTML = profilePosts.innerHTML;
     }
-    loadPostCounts();
 });
 
 function switchTab(btn) {
@@ -294,7 +215,6 @@ function switchTab(btn) {
         const profilePosts = document.querySelector('.profile-posts');
         if(profilePosts && originalPostsHTML) {
             profilePosts.innerHTML = originalPostsHTML;
-            loadPostCounts();
         }
     }
 }
@@ -427,7 +347,6 @@ function renderLikedPosts(posts) {
 
 // Load post counts on page load
 document.addEventListener('DOMContentLoaded', function() {
-    loadPostCounts();
     
     // Add event listeners to action buttons
     document.querySelectorAll('.post .tweet-actions button').forEach(btn => {
@@ -471,12 +390,10 @@ function togglePostLike(postId, btn) {
         return resp.json();
     })
     .then(data => {
-        if(data.success){
-            const countEl = btn.querySelector('.count');
-            countEl.textContent = fmt(data.likeCount);
-            btn.classList.remove('liked');
-            if(data.liked) btn.classList.add('liked');
-        }
+        if(!data) return;
+        const countEl = btn.querySelector('.count');
+        countEl.textContent = fmt(data.likeCount);
+        btn.classList.toggle('liked', data.liked);
     })
     .catch(err => console.error('Error:', err));
 }
@@ -498,7 +415,7 @@ function togglePostRetweet(postId, btn) {
     .then(data => {
         if(data.success){
             const countEl = btn.querySelector('.count');
-            countEl.textContent = fmt(data.retpostCount);
+            countEl.textContent = fmt(data.repostCount);
             btn.classList.remove('retweeted');
             if(data.retweeted) btn.classList.add('retweeted');
         }
