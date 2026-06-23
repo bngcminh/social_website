@@ -386,6 +386,15 @@ if(homeSearchInput){
   });
 }
 
+const homeSearchForm = document.getElementById('home-search-form');
+if(homeSearchForm){
+  homeSearchForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const keyword = homeSearchInput ? homeSearchInput.value.trim() : '';
+    window.location.href = keyword ? `/explore?q=${encodeURIComponent(keyword)}` : '/explore';
+  });
+}
+
 if(document.getElementById('feed-list')){
   loadFollows();
   loadPosts();

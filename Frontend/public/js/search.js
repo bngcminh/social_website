@@ -120,10 +120,18 @@ async function runSearch(){
 
     try{
         const response = await fetch(`/search?q=${encodeURIComponent(keyword)}&type=${encodeURIComponent(currentSearchType)}`);
-        const data = await response.json();
+        const responseText = await response.text();
+        let data = {};
+
+        try{
+            data = responseText ? JSON.parse(responseText) : {};
+        }catch(parseErr){
+            data = { message: responseText };
+        }
 
         if(!response.ok){
             emptyState.textContent = data.message || 'Có lỗi khi tìm kiếm.';
+            console.error('Search request failed:', response.status, data.message || responseText);
             return;
         }
 
