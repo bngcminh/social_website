@@ -375,6 +375,17 @@ document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',fun
   this.classList.add('active');
 }));
 
+const homeSearchInput = document.getElementById('home-search-input');
+if(homeSearchInput){
+  homeSearchInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      const keyword = this.value.trim();
+      window.location.href = keyword ? `/explore?q=${encodeURIComponent(keyword)}` : '/explore';
+    }
+  });
+}
+
 if(document.getElementById('feed-list')){
   loadFollows();
   loadPosts();

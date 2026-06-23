@@ -47,6 +47,23 @@ export const getAuth = async function(req, rep){
     }
 }
 
+export const getSearchPage = async function(req, rep){
+    try{
+        const user = await getCurrentUser(req);
+        if(!user){
+            return rep.redirect('/auth');
+        }
+
+        return rep.view('search.ejs', {
+            user,
+            keyword: req.query.q || ''
+        });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi trong quá trình hiển thị trang tìm kiếm');
+    }
+}
+
 export const getMessage = async function(req, rep){
     try{
         const user = await getCurrentUser(req);

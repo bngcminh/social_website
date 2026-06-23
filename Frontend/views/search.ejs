@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm kiếm - X Clone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/public/css/search.css">
+</head>
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <a href="/" class="logo-container" aria-label="Trang chủ">
+                <div class="custom-x"></div>
+            </a>
+
+            <div class="nav-links">
+                <a class="nav-item" href="/"><i class="fa-solid fa-house"></i> <span>Trang chủ</span></a>
+                <a class="nav-item active" href="/explore"><i class="fa-solid fa-magnifying-glass"></i> <span>Tìm</span></a>
+                <a class="nav-item" href="/notifications"><i class="fa-regular fa-bell"></i> <span>Thông báo</span></a>
+                <a class="nav-item" href="/messages"><i class="fa-regular fa-envelope"></i> <span>Tin nhắn</span></a>
+                <% if (user) { %>
+                    <a class="nav-item" href="/profile/<%= user.username %>"><i class="fa-regular fa-user"></i> <span>Profile</span></a>
+                <% } %>
+                <% if (user && user.role === 'admin') { %>
+                    <a class="nav-item" href="/admin"><i class="fa-solid fa-gear"></i> <span>Quản trị</span></a>
+                <% } %>
+                <div class="nav-item"><i class="fa-solid fa-ellipsis"></i> <span>Thêm</span></div>
+            </div>
+
+            <button class="btn-post" onclick="window.location.href='/'">Đăng bài</button>
+
+            <% if (user) { %>
+                <div class="sidebar-user">
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-avatar"><%= user.username.substring(0, 1).toUpperCase() %></div>
+                        <div>
+                            <div class="sidebar-name"><%= user.username %></div>
+                            <div class="sidebar-handle">@<%= user.username %></div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-ellipsis"></i>
+                </div>
+            <% } %>
+        </nav>
+
+        <main class="main-content">
+            <header class="header-top">
+                <div class="search-header">
+                    <div class="back-btn" onclick="history.back()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </div>
+
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input id="search-input" type="text" value="<%= keyword %>" placeholder="Tìm kiếm bài viết, người dùng">
+                    </div>
+                </div>
+
+                <div class="search-tabs">
+                    <div class="tab active" data-type="all">Tất cả</div>
+                    <div class="tab" data-type="posts">Bài viết</div>
+                    <div class="tab" data-type="users">Người dùng</div>
+                </div>
+            </header>
+
+            <div class="empty-state" id="search-empty">
+                Nhập từ khóa để tìm kiếm bài viết hoặc người dùng.
+            </div>
+
+            <div id="search-results-container"></div>
+        </main>
+
+        <aside class="right-sidebar">
+            <div class="suggestion-box">
+                <h2>Gợi ý tìm kiếm</h2>
+                <div class="suggest-item" data-keyword="AI">
+                    <div class="suggest-title">AI</div>
+                    <div class="suggest-desc">Tìm bài viết về công nghệ và trí tuệ nhân tạo.</div>
+                </div>
+                <div class="suggest-item" data-keyword="Hà Nội">
+                    <div class="suggest-title">Hà Nội</div>
+                    <div class="suggest-desc">Tìm nội dung liên quan tới Hà Nội.</div>
+                </div>
+                <div class="suggest-item" data-keyword="lập trình">
+                    <div class="suggest-title">lập trình</div>
+                    <div class="suggest-desc">Tìm bài viết và người dùng về lập trình.</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="/public/js/search.js?v=20260623-search-fix"></script>
+</body>
+</html>
