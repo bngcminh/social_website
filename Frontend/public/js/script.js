@@ -138,7 +138,7 @@ function renderFeed(){
     buttons[0].id='rp'+t._id;
     
     buttons[1].onclick=()=>toggleRT(t._id);
-    buttons[1].querySelector('.count').textContent=fmt(t.retpostCount || 0);
+    buttons[1].querySelector('.count').textContent=fmt(t.repostCount || 0); // sửa lại lỗi cú pháp(retpost thành repost)
     buttons[1].id='rt'+t._id;
     
     buttons[2].onclick=()=>toggleLike(t._id);
@@ -226,7 +226,7 @@ function toggleRT(id){
       countEl.textContent=fmt(data.repostCount);
       btn.classList.remove('retweeted');
       if(data.retweeted) btn.classList.add('retweeted');
-      t.retpostCount = data.repostCount;
+      t.repostCount = data.repostCount; // đổi retpost thành repost
       t.retweeted = data.retweeted;
     }
   })

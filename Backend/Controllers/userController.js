@@ -22,6 +22,14 @@ export const getProfileUser = async function(req, rep){
 
         const posts = await Post.find({ author: profileUser._id })
             .populate('author', 'username avatar')
+            .populate({
+                path: 'rePostOf',
+                select: 'content media author likeCount commentCount viewsCount repostCount createdAt',
+                populate: {
+                    path: 'author',
+                    select: 'username avatar'
+                }
+            })
             .sort({ createdAt: -1 });
 
         const isOwnProfile = currentUser._id.toString() === profileUser._id.toString();
