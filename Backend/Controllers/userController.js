@@ -2,6 +2,7 @@ import User from '../Models/User.js';
 import Post from '../Models/Post.js';
 import Follow from '../Models/Follow.js';
 import Like from '../Models/Like.js';
+import Comment from '../Models/Comment.js'
 import fs from 'node:fs';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
@@ -409,5 +410,22 @@ export const getLikedPosts = async function(req, rep){
             success: false,
             message: 'Có lỗi khi lấy danh sách các bài viết đã thích'
         });
+    }
+}
+
+export const getUserReplies = async function(req, rep){
+    try{
+        const username = req.params.username;
+        const user = await User.findOne({ username });
+        if(!user) return rep.code(404).send('Không tìm thấy user');
+
+        const comments = await Comment.find({ author: user._id })
+            .populate('author', 'username avatar')
+            .sort({ createdAt: -1 });
+
+        return rep.send({ comments });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi khi lấy replies');
     }
 }
