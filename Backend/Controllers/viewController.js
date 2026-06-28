@@ -184,6 +184,56 @@ export const getHomePosts = async function(req, rep){
     }
 }
 
+export const getFollowingPosts = async function(req, rep){
+    try{
+        const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
+        const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
+
+        const followingList = await Follow.find({
+            follower: req.user.id
+        }).select('following');
+
+        const followingIds = followingList.map(function(item){
+            return item.following;
+        });
+
+        if(followingIds.length === 0){
+            return rep.send({
+                success: false,
+                data: [],
+                message: 'Bạn chưa theo dõi ai'
+            });
+        }
+
+        const posts = await Post.find({
+            author: { $in: followingIds }
+        })
+        .populate('author', 'username avatar')
+        .populate({
+            path: 'rePostOf',
+            select: 'content media author likeCount commentCount viewsCount repostCount createdAt',
+            populate: {
+                path: 'author',
+                select: 'username avatar'
+            }
+        })
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+        return rep.send({
+            success: true,
+            data: posts.map(formPostData)
+        });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send({
+            success: false,
+            message: 'Có lỗi khi lấy bài viết đang theo dõi'
+        });
+    }
+}
+
 export const getPostDetail = async function(req, rep){
     try{
         const postId = req.params.postId;

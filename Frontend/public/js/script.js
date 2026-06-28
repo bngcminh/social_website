@@ -24,6 +24,41 @@ async function loadPosts() {
   }
 }
 
+// tải các bài viết của người mình đang theo dõi
+async function loadFollowingPosts(){
+  try{
+    const response = await fetch('/get_following_posts');
+
+    if(response.status === 401){
+      window.location.href = '/auth';
+      return;
+    }
+
+    const result = await response.json();
+
+    if(result.success){
+      tweets = result.data.map(post => ({
+        ...post,
+        replies: 0,
+        liked: false,
+        retweeted: false,
+        color: ['#7c3aed', '#db2777', '#059669', '#1d9bf0'][Math.floor(Math.random() * 4)]
+      }));
+
+      renderFeed();
+
+      if(tweets.length === 0){
+        document.getElementById('feed-list').innerHTML =
+          '<p style="padding:20px;text-align:center;color:#777;">Bạn chưa theo dõi ai hoặc người bạn theo dõi chưa có bài viết.</p>';
+      }
+    }
+  }catch(err){
+    console.error('Lỗi khi load following posts:', err);
+    document.getElementById('feed-list').innerHTML =
+      '<p style="padding:20px;text-align:center;color:#777;">Không thể tải bài viết đang theo dõi.</p>';
+  }
+}
+
 async function loadFollows() {
   const followList = document.getElementById('follow-list');
   if(!followList) return;
@@ -365,10 +400,24 @@ async function postTweet(e){
   }
 }
 
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  this.classList.add('active');
-}));
+// chuyển tab giữa dành cho bạn và đang theo dõi
+document.querySelectorAll('.tab').forEach(function(tab, index){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(item){
+      item.classList.remove('active');
+    });
+
+    this.classList.add('active');
+
+    if(index === 0){
+      loadPosts();
+    }
+
+    if(index === 1){
+      loadFollowingPosts();
+    }
+  });
+});
 
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',function(){
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
