@@ -386,6 +386,7 @@ if(homeSearchInput){
   });
 }
 
+// chức năng tìm kiếm
 const homeSearchForm = document.getElementById('home-search-form');
 if(homeSearchForm){
   homeSearchForm.addEventListener('submit', function(e){

@@ -42,8 +42,12 @@
             <div class="tweet-options" style="position:relative">
               <svg onclick="togglePostMenu(this)" style="cursor:pointer" viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
               <div id="post-menu" style="display:none;position:absolute;right:0;top:24px;background:#000;border:1px solid #2f3336;border-radius:12px;min-width:160px;z-index:99;overflow:hidden">
-                <div class="comment-menu-item" onclick="editPostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Chỉnh sửa</div>
-                <div class="comment-menu-item" onclick="deletePostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Xóa</div>
+                <% if (user && user._id.toString() === post.author._id.toString()) { %>
+                  <div class="comment-menu-item" onclick="editPostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Chỉnh sửa</div>
+                  <div class="comment-menu-item" onclick="deletePostAction()" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#f4212e">Xóa</div>
+                <% } else { %>
+                  <div class="comment-menu-item" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Báo cáo</div>
+                <% } %>
               </div>
             </div>
           </div>
@@ -144,9 +148,9 @@
 </div>
 
 <script src="/public/js/script.js"></script>
-<script src="/public/js/script.js"></script>
 <script>
 const postId = '<%= post.id %>';
+const currentUserId = '<%= user ? user._id : "" %>';
 
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -263,32 +267,38 @@ async function loadComments(){
       return;
     }
 
-  data.comments.forEach(c => {
-    const el = document.createElement('div');
-    el.className = 'tweet';
-    el.innerHTML = `
-      <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
-      <div class="tweet-body">
-        <div class="tweet-meta">
-          <div class="tweet-user-post-cmt">
-            <span class="tweet-name">${c.author?.username || 'Anonymous'}</span>
-            <span class="tweet-handle">@${c.author?.username || 'user'}</span>
-            <span class="tweet-time">· </span>
-          </div>
-          <div class="tweet-options" style="position:relative">
-            <svg onclick="toggleCommentMenu(this)" style="cursor:pointer" viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
-            <div class="comment-menu" style="display:none;position:absolute;right:0;top:24px;background:#000;border:1px solid #2f3336;border-radius:12px;min-width:160px;z-index:99;overflow:hidden">
+data.comments.forEach(c => {
+  const el = document.createElement('div');
+  el.className = 'tweet';
+  const isOwner = c.author?._id?.toString() === currentUserId;
+
+  el.innerHTML = `
+    <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
+    <div class="tweet-body">
+      <div class="tweet-meta">
+        <div class="tweet-user-post-cmt">
+          <span class="tweet-name">${c.author?.username || 'Anonymous'}</span>
+          <span class="tweet-handle">@${c.author?.username || 'user'}</span>
+          <span class="tweet-time">· </span>
+        </div>
+        <div class="tweet-options" style="position:relative">
+          <svg onclick="toggleCommentMenu(this)" style="cursor:pointer" viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+          <div class="comment-menu" style="display:none;position:absolute;right:0;top:24px;background:#000;border:1px solid #2f3336;border-radius:12px;min-width:160px;z-index:99;overflow:hidden">
+            ${isOwner ? `
               <div class="comment-menu-item" onclick="editCommentPrompt('${c._id}')" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Chỉnh sửa</div>
-              <div class="comment-menu-item" onclick="deleteCommentAction('${c._id}')" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Xóa</div>
-            </div>
+              <div class="comment-menu-item" onclick="deleteCommentAction('${c._id}')" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#f4212e">Xóa</div>
+            ` : `
+              <div class="comment-menu-item" style="padding:12px 16px;cursor:pointer;font-size:14px;color:#fff">Báo cáo</div>
+            `}
           </div>
         </div>
-        <div class="tweet-text">${c.content || ''}</div>
-        ${c.image ? `<img src="${c.image}" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
       </div>
-    `;
-    list.appendChild(el);
-  });
+      <div class="tweet-text">${c.content || ''}</div>
+      ${c.image ? `<img src="${c.image}" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
+    </div>
+  `;
+  list.appendChild(el);
+});
   } catch (err) {
     console.error('Error loading comments:', err);
   }
@@ -314,8 +324,59 @@ async function deleteCommentAction(commentId){
 }
 
 function editCommentPrompt(commentId){
-  const content = prompt('Nhập nội dung mới:');
+  // tìm đúng tweet chứa comment đó
+  const commentEls = document.querySelectorAll('#comment-list .tweet');
+  let targetTextEl = null;
+
+  commentEls.forEach(el => {
+    if(el.querySelector(`[onclick*="${commentId}"]`)){
+      targetTextEl = el.querySelector('.tweet-text');
+    }
+  });
+
+  if(!targetTextEl) return;
+
+  const originalContent = targetTextEl.textContent;
+
+  targetTextEl.contentEditable = 'true';
+  targetTextEl.style.outline = 'none';
+  targetTextEl.style.borderBottom = '1px solid #1d9bf0';
+  targetTextEl.focus();
+
+  // xóa actions cũ nếu có
+  document.querySelectorAll('.edit-comment-actions').forEach(a => a.remove());
+
+  const actions = document.createElement('div');
+  actions.className = 'edit-comment-actions';
+  actions.style.cssText = 'display:flex;gap:8px;margin-top:8px;justify-content:flex-end';
+  actions.innerHTML = `
+    <button onclick="cancelEditComment(this, '${originalContent}')" style="padding:6px 16px;border-radius:20px;border:1px solid #2f3336;background:transparent;color:#000;cursor:pointer">Hủy</button>
+    <button onclick="saveEditComment(this, '${commentId}')" style="padding:6px 16px;border-radius:20px;border:none;background:#1d9bf0;color:#fff;cursor:pointer;font-weight:bold">Lưu</button>
+  `;
+  targetTextEl.insertAdjacentElement('afterend', actions);
+
+  document.querySelectorAll('.comment-menu').forEach(m => m.style.display = 'none');
+}
+
+function cancelEditComment(btn, originalContent){
+  const actions = btn.closest('.edit-comment-actions');
+  const textEl = actions.previousElementSibling;
+  textEl.contentEditable = 'false';
+  textEl.style.borderBottom = 'none';
+  textEl.textContent = originalContent;
+  actions.remove();
+}
+
+function saveEditComment(btn, commentId){
+  const actions = btn.closest('.edit-comment-actions');
+  const textEl = actions.previousElementSibling;
+  const content = textEl.textContent.trim();
   if(!content) return;
+
+  textEl.contentEditable = 'false';
+  textEl.style.borderBottom = 'none';
+  actions.remove();
+
   const formData = new FormData();
   formData.append('content', content);
   fetch(`/comments/${commentId}`, {
@@ -324,7 +385,9 @@ function editCommentPrompt(commentId){
   })
   .then(r => r.json())
   .then(data => {
-    if(data.comment) loadComments();
+    if(data.comment){
+      textEl.textContent = data.comment.content;
+    }
   });
 }
 document.addEventListener('click', function(e){
@@ -351,8 +414,46 @@ async function deletePostAction(){
 }
 
 function editPostAction(){
-  const content = prompt('Nhập nội dung mới:');
+  const textEl = document.querySelector('.tweet-text');
+  const originalContent = textEl.textContent;
+  
+  // đổi thành editable
+  textEl.contentEditable = 'true';
+  textEl.style.outline = 'none';
+  textEl.style.borderBottom = '1px solid #1d9bf0';
+  textEl.focus();
+
+  // thêm nút Lưu/Hủy
+  const actions = document.createElement('div');
+  actions.id = 'edit-post-actions';
+  actions.style.cssText = 'display:flex;gap:8px;margin-top:8px;justify-content:flex-end';
+  actions.innerHTML = `
+    <button onclick="cancelEditPost('${originalContent}')" style="padding:6px 16px;border-radius:20px;border:1px solid #2f3336;background:transparent;color:#000;cursor:pointer">Hủy</button>
+    <button onclick="saveEditPost()" style="padding:6px 16px;border-radius:20px;border:none;background:#1d9bf0;color:#fff;cursor:pointer;font-weight:bold">Lưu</button>
+  `;
+  textEl.insertAdjacentElement('afterend', actions);
+
+  // đóng menu
+  document.getElementById('post-menu').style.display = 'none';
+}
+
+function cancelEditPost(originalContent){
+  const textEl = document.querySelector('.tweet-text');
+  textEl.contentEditable = 'false';
+  textEl.style.borderBottom = 'none';
+  textEl.textContent = originalContent;
+  document.getElementById('edit-post-actions')?.remove();
+}
+
+function saveEditPost(){
+  const textEl = document.querySelector('.tweet-text');
+  const content = textEl.textContent.trim();
   if(!content) return;
+
+  textEl.contentEditable = 'false';
+  textEl.style.borderBottom = 'none';
+  document.getElementById('edit-post-actions')?.remove();
+
   const formData = new FormData();
   formData.append('content', content);
   fetch(`/edit_post/${postId}`, {
@@ -362,7 +463,7 @@ function editPostAction(){
   .then(r => r.json())
   .then(data => {
     if(data.post){
-      document.querySelector('.tweet-text').textContent = data.post.content;
+      textEl.textContent = data.post.content;
     }
   });
 }

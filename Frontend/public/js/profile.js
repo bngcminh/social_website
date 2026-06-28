@@ -22,7 +22,6 @@ function togglePostMenu(btn) {
 // Edit post
 function editPost(postId) {
     alert('Chức năng chỉnh sửa bài viết sẽ được cập nhật sớm!');
-    // TODO: Implement edit post functionality
 }
 
 // Delete post
@@ -40,7 +39,6 @@ async function deletePost(postId) {
         });
 
         if (response.ok) {
-            // Remove post from DOM
             document.querySelector(`[data-post-id="${postId}"]`).remove();
             alert('Xóa bài viết thành công!');
             // Refresh page
@@ -149,30 +147,35 @@ async function saveProfile() {
             body: formData
         });
 
+        const responseText = await response.text();
         let result = {};
-        try {
-            result = await response.json();
-        } catch (parseError) {
-            result = {};
-        }
 
-        if (response.ok) {
-            alert('Cập nhật hồ sơ thành công!');
-            const modal = document.getElementById('edit-profile-modal');
-            if(modal){
-                modal.classList.remove('active');
-            }
-            if(result.user && result.user.username){
-                window.location.href = `/profile/${encodeURIComponent(result.user.username)}`;
-            }else{
-                location.reload();
+        if (responseText) {
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                result = {
+                    success: response.ok,
+                    message: responseText
+                };
             }
         } else {
-            alert('Lỗi: ' + (result.message || 'Không thể cập nhật hồ sơ'));
+            result = {
+                success: response.ok,
+                message: response.ok ? 'Cập nhật hồ sơ thành công' : 'Không thể cập nhật hồ sơ'
+            };
+        }
+
+        if (response.ok && result.success) {
+            alert('Cập nhật hồ sơ thành công!');
+            closeEditProfile();
+            location.reload();
+        } else {
+            alert('Lỗi: ' + result.message);
         }
     } catch (error) {
         console.error('Error saving profile:', error);
-        alert('Không thể kết nối tới server để cập nhật hồ sơ');
+        alert('Lỗi khi lưu hồ sơ');
     }
 }
 
@@ -196,28 +199,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function switchTab(btn) {
-    // Remove active from all tabs
-    document.querySelectorAll('.profile-tabs .tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    // Add active to clicked tab
-    btn.parentElement.classList.add('active');
-    
-    // Get tab name
-    const tabName = btn.getAttribute('data-tab');
-    
-    // Load data based on tab
-    if(tabName === 'likes') {
-        loadLikedPosts();
-    } else if(tabName === 'posts') {
-        // Restore original posts
-        const profilePosts = document.querySelector('.profile-posts');
-        if(profilePosts && originalPostsHTML) {
-            profilePosts.innerHTML = originalPostsHTML;
-        }
-    }
-}
 
 // Load liked posts
 async function loadLikedPosts() {
@@ -448,4 +429,63 @@ function replyToPost(postId, btn) {
         }
     })
     .catch(err => console.error('Error:', err));
+}
+function switchTab(btn) {
+    document.querySelectorAll('.profile-tabs .tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    btn.parentElement.classList.add('active');
+    
+    const tabName = btn.getAttribute('data-tab');
+    
+    if(tabName === 'likes') {
+        loadLikedPosts();
+    } else if(tabName === 'replies') {
+        loadReplies();  // thêm case này
+    } else if(tabName === 'posts') {
+        const profilePosts = document.querySelector('.profile-posts');
+        if(profilePosts && originalPostsHTML) {
+            profilePosts.innerHTML = originalPostsHTML;
+        }
+    }
+}
+async function loadReplies(){
+  try {
+    const res = await fetch(`/profile/${profileUsername}/replies`);
+    const data = await res.json();
+    const container = document.querySelector('.profile-posts');
+    container.innerHTML = '';
+
+    if(!data.comments || data.comments.length === 0){
+      container.innerHTML = `<div class="empty-state"><p>Chưa có trả lời nào</p></div>`;
+      return;
+    }
+
+    data.comments.forEach(c => {
+      const el = document.createElement('div');
+      el.className = 'post';
+      el.innerHTML = `
+        <div class="post-left">
+          <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
+        </div>
+        <div class="post-right">
+          <div class="post-header">
+            <div class="tweet-user">
+                <span class="post-author">${c.author.username}</span>
+                <span class="post-handle">@${c.author.username}</span>
+                <span class="post-time"> · ${new Date(c.createdAt).toLocaleDateString('vi-VN')}</span>
+            </div>
+            <div class="tweet-options">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+            </div>
+        </div>
+          <div class="post-content">${c.content || ''}</div>
+          ${c.image ? `<img src="${c.image}" style="border-radius:16px;max-width:100%;margin-top:8px">` : ''}
+        </div>
+      `;
+      container.appendChild(el);
+    });
+  } catch(err) {
+    console.error('Error loading replies:', err);
+  }
 }
