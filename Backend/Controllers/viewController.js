@@ -123,7 +123,7 @@ export const getHome = async function(req, rep){
         const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
 
         const [posts, totalPosts] = await Promise.all([
-            Post.find()
+            Post.find({ rePostOf: null })
                 .populate('author', 'username avatar')
                 .populate({
                     path: 'rePostOf',
@@ -136,7 +136,7 @@ export const getHome = async function(req, rep){
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit),
-            Post.countDocuments()
+            Post.countDocuments({ rePostOf: null })
         ]);
 
         return rep.view('home.ejs', {
@@ -158,7 +158,7 @@ export const getHomePosts = async function(req, rep){
         const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
         const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
         const [posts, totalPosts] = await Promise.all([
-            Post.find()
+            Post.find({ rePostOf: null })
                 .populate('author', 'username avatar')
                 .populate({
                     path: 'rePostOf',
@@ -171,7 +171,7 @@ export const getHomePosts = async function(req, rep){
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit),
-            Post.countDocuments()
+            Post.countDocuments({ rePostOf: null })
         ]);
 
         return rep.send({
@@ -206,7 +206,8 @@ export const getFollowingPosts = async function(req, rep){
         }
 
         const posts = await Post.find({
-            author: { $in: followingIds }
+            author: { $in: followingIds },
+            rePostOf: null
         })
         .populate('author', 'username avatar')
         .populate({
