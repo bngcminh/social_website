@@ -429,3 +429,33 @@ export const getUserReplies = async function(req, rep){
         return rep.code(500).send('Có lỗi khi lấy replies');
     }
 }
+
+export const getUserReposts = async function(req, rep){
+    try{
+        const username = req.params.username;
+        const user = await User.findOne({ username });
+
+        if(!user){
+            return rep.code(404).send('Không tìm thấy user');
+        }
+
+        const reposts = await Post.find({
+            author: user._id,
+            rePostOf: { $ne: null }
+        })
+            .populate('author', 'username avatar')
+            .populate({
+                path: 'rePostOf',
+                populate: {
+                    path: 'author',
+                    select: 'username avatar'
+                }
+            })
+            .sort({ createdAt: -1 });
+
+        return rep.send({ reposts });
+    }catch(err){
+        console.log(err);
+        return rep.code(500).send('Có lỗi khi lấy reposts');
+    }
+}

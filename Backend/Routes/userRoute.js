@@ -10,5 +10,6 @@ export function userRoute(fastify, options){
     fastify.get('/api/users/suggestions', userController.getSuggestions);
     fastify.post('/posts/:postId/retweet', { preHandler: authentication }, userController.toggleRetweet);
     fastify.get('/posts/liked', { preHandler: authentication }, userController.getLikedPosts);
-    fastify.get('/profile/:username/replies', userController.getUserReplies);
+    fastify.get('/profile/:username/replies', { preHandler: authentication }, userController.getUserReplies);
+    fastify.get('/profile/:username/reposts', { preHandler: authentication }, userController.getUserReposts);
 }
