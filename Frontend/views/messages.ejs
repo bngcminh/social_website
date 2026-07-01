@@ -18,17 +18,17 @@
         </a>
       </div>
       <div class="nav">
-        <a class="nav-item active">
-          <div class="nav-item-content">
+        <a class="nav-item active" href="/">
+          <div class="nav-item-content" >
             <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i r-lwhw9o r-cnnz9e"><g><path d="M10.059 2.593c1.175-.784 2.707-.784 3.882 0l6.5 4.333C21.415 7.575 22 8.668 22 9.838V18.5c0 1.933-1.567 3.5-3.5 3.5h-4.25v-5.25c0-1.243-1.007-2.25-2.25-2.25s-2.25 1.007-2.25 2.25V22H5.5C3.567 22 2 20.433 2 18.5V9.838c0-1.17.585-2.263 1.559-2.912l6.5-4.333z"></path></g></svg>
           </div>
         </a>
-        <a class="nav-item active">
+        <a class="nav-item active" href="/explore">
           <div class="nav-item-content">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i r-lwhw9o r-cnnz9e"><g><path d="M10.25 3.75c-3.59 0-6.5 2.91-6.5 6.5s2.91 6.5 6.5 6.5c1.795 0 3.419-.726 4.596-1.904 1.178-1.177 1.904-2.801 1.904-4.596 0-3.59-2.91-6.5-6.5-6.5zm-8.5 6.5c0-4.694 3.806-8.5 8.5-8.5s8.5 3.806 8.5 8.5c0 1.986-.682 3.815-1.824 5.262l4.781 4.781-1.414 1.414-4.781-4.781c-1.447 1.142-3.276 1.824-5.262 1.824-4.694 0-8.5-3.806-8.5-8.5z"></path></g></svg>
           </div>
         </a>
-        <a class="nav-item active">
+        <a class="nav-item active" href="/notifications">
           <div class="nav-item-content">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i r-lwhw9o r-cnnz9e"><g><path d="M19.993 9.042C19.48 5.017 16.054 2 11.996 2s-7.49 3.021-7.999 7.051L2.866 18H7.1c.463 2.282 2.481 4 4.9 4s4.437-1.718 4.9-4h4.236l-1.143-8.958zM12 20c-1.306 0-2.417-.835-2.829-2h5.658c-.412 1.165-1.523 2-2.829 2zm-6.866-4l.847-6.698C6.364 6.272 8.941 4 11.996 4s5.627 2.268 6.013 5.295L18.864 16H5.134z"></path></g></svg>
           </div>
@@ -45,7 +45,7 @@
             </div>
           </a>
         <% } %>
-        <a class="nav-item active">
+        <a class="nav-item active" href="/bookmarks">
           <div class="nav-item-content">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1nao33i r-lwhw9o r-cnnz9e"><g><path d="M3.75 12c0-4.56 3.69-8.25 8.25-8.25s8.25 3.69 8.25 8.25-3.69 8.25-8.25 8.25S3.75 16.56 3.75 12zM12 1.75C6.34 1.75 1.75 6.34 1.75 12S6.34 22.25 12 22.25 22.25 17.66 22.25 12 17.66 1.75 12 1.75zm-4.75 11.5c.69 0 1.25-.56 1.25-1.25s-.56-1.25-1.25-1.25S6 11.31 6 12s.56 1.25 1.25 1.25zm9.5 0c.69 0 1.25-.56 1.25-1.25s-.56-1.25-1.25-1.25-1.25.56-1.25 1.25.56 1.25 1.25 1.25zM13.25 12c0 .69-.56 1.25-1.25 1.25s-1.25-.56-1.25-1.25.56-1.25 1.25-1.25 1.25.56 1.25 1.25z"></path></g></svg>
           </div>
@@ -58,7 +58,13 @@
     <div class="sidebar-bottom sidebar-bottom-messages">
       <% if (user) { %>
         <button class="user-btn">
-          <div class="avatar"><%= user.username.substring(0, 1).toUpperCase() %></div>
+          <div class="avatar">
+            <% if (user.avatar) { %>
+              <img src="<%= user.avatar %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+            <% } else { %>
+              <%= user.username.substring(0, 1).toUpperCase() %>
+            <% } %>
+          </div>
         </button>
       <% } else { %>
         <a href="/auth" class="tweet-btn" style="width:100%">
@@ -102,7 +108,13 @@
               %>
               <div class="conversation-item" data-conversation-id="<%= conv._id %>" onclick="loadConversation('<%= conv._id %>')">
                 <div class="conversation-avatar">
-                  <div class="avatar"><%= otherParticipant.username.substring(0, 1).toUpperCase() %></div>
+                  <div class="avatar">
+                    <% if (otherParticipant.avatar && otherParticipant.avatar.length > 0) { %>
+                      <img src="<%= otherParticipant.avatar %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+                    <% } else { %>
+                      <%= otherParticipant.username.substring(0, 1).toUpperCase() %>
+                    <% } %>
+                  </div>
                 </div>
                 <div class="conversation-info">
                   <div class="conversation-name"><%= otherParticipant.username %></div>

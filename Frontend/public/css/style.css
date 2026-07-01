@@ -81,6 +81,7 @@ a {
     width: 100%;
     cursor: pointer;
     color: #000;
+    border-radius: 9999px;
 }
 .nav-item-content{
     max-width: 100%;
@@ -108,7 +109,7 @@ a {
     overflow-wrap: break-word;
 }
 .nav-item:hover {
-  background: var(--color-background-secondary);
+  background: #e8e8e8;
 }
 
 .nav-item.active {

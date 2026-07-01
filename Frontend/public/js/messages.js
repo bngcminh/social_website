@@ -80,16 +80,28 @@ async function loadConversation(conversationId) {
     });
 
     const item = document.querySelector(`[data-conversation-id="${conversationId}"]`);
-    if(item){
-        document.querySelectorAll('.conversation-item').forEach(function(conversationItem){
-            conversationItem.classList.remove('active');
-        });
-        item.classList.add('active');
+        if(item){
+            document.querySelectorAll('.conversation-item').forEach(function(conversationItem){
+                conversationItem.classList.remove('active');
+            });
+            item.classList.add('active');
 
-        const username = item.querySelector('.conversation-name')?.textContent || '';
-        document.getElementById('header-username').textContent = username;
-        document.getElementById('header-avatar').textContent = username.substring(0, 1).toUpperCase();
-    }
+            const username = item.querySelector('.conversation-name')?.textContent || '';
+            const avatarEl = item.querySelector('.avatar');
+            const headerAvatar = document.getElementById('header-avatar');
+            
+            document.getElementById('header-username').textContent = username;
+            
+            // copy avatar từ conversation item sang header
+            if(avatarEl){
+                headerAvatar.innerHTML = avatarEl.innerHTML || avatarEl.textContent;
+                if(!avatarEl.querySelector('img')){
+                    headerAvatar.textContent = username.substring(0, 1).toUpperCase();
+                }
+            } else {
+                headerAvatar.textContent = username.substring(0, 1).toUpperCase();
+            }
+        }
 
     document.getElementById('message-area-empty').style.display = 'none';
     document.getElementById('message-area-content').style.display = 'flex';

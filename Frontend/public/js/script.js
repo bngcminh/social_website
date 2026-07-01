@@ -24,41 +24,6 @@ async function loadPosts() {
   }
 }
 
-// tải các bài viết của người mình đang theo dõi
-async function loadFollowingPosts(){
-  try{
-    const response = await fetch('/get_following_posts');
-
-    if(response.status === 401){
-      window.location.href = '/auth';
-      return;
-    }
-
-    const result = await response.json();
-
-    if(result.success){
-      tweets = result.data.map(post => ({
-        ...post,
-        replies: 0,
-        liked: false,
-        retweeted: false,
-        color: ['#7c3aed', '#db2777', '#059669', '#1d9bf0'][Math.floor(Math.random() * 4)]
-      }));
-
-      renderFeed();
-
-      if(tweets.length === 0){
-        document.getElementById('feed-list').innerHTML =
-          '<p style="padding:20px;text-align:center;color:#777;">Bạn chưa theo dõi ai hoặc người bạn theo dõi chưa có bài viết.</p>';
-      }
-    }
-  }catch(err){
-    console.error('Lỗi khi load following posts:', err);
-    document.getElementById('feed-list').innerHTML =
-      '<p style="padding:20px;text-align:center;color:#777;">Không thể tải bài viết đang theo dõi.</p>';
-  }
-}
-
 async function loadFollows() {
   const followList = document.getElementById('follow-list');
   if(!followList) return;
@@ -94,13 +59,18 @@ function renderFeed(){
       window.location.href = `/post/${t._id}`;
     });
 
-    clone.querySelector('.avatar').style.background=t.color || '#1d9bf0';
-    clone.querySelector('.avatar').textContent=t.author?.username?.charAt(0).toUpperCase() || 'U';
-    clone.querySelector('.avatar').style.cursor='pointer';
-    clone.querySelector('.avatar').onclick=(e)=>{
+    const avatarEl = clone.querySelector('.avatar');
+    avatarEl.style.cursor = 'pointer';
+    avatarEl.onclick = (e) => {
       e.stopPropagation();
-      window.location.href=`/profile/${t.author?.username}`;
+      window.location.href = `/profile/${t.author?.username}`;
     };
+    if(t.author?.avatar) {
+      avatarEl.innerHTML = `<img src="${t.author.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+    } else {
+      avatarEl.style.background = t.color || '#1d9bf0';
+      avatarEl.textContent = t.author?.username?.charAt(0).toUpperCase() || 'U';
+    }
 
     clone.querySelector('.tweet-name').textContent=t.author?.username || 'Anonymous';
     clone.querySelector('.tweet-handle').textContent='@' + (t.author?.username || 'user');
@@ -109,8 +79,7 @@ function renderFeed(){
       e.stopPropagation();
       window.location.href=`/profile/${t.author?.username}`;
     };
-    
-    // Calculate time ago
+
     const createdAt = new Date(t.createdAt);
     const now = new Date();
     const diff = Math.floor((now - createdAt) / 1000);
@@ -119,11 +88,10 @@ function renderFeed(){
     else if (diff < 3600) timeStr = Math.floor(diff / 60) + ' phút';
     else if (diff < 86400) timeStr = Math.floor(diff / 3600) + ' giờ';
     else timeStr = Math.floor(diff / 86400) + ' ngày';
-    
+
     clone.querySelector('.tweet-time').textContent='· ' + timeStr;
     clone.querySelector('.tweet-text').textContent=t.content;
-    
-    // Render images
+
     if(t.media && t.media.length > 0){
       const imgContainer=clone.querySelector('.tweet-image');
       imgContainer.style.display='block';
@@ -131,24 +99,24 @@ function renderFeed(){
     } else {
       clone.querySelector('.tweet-image').style.display='none';
     }
-    
+
     const buttons=clone.querySelectorAll('.tweet-actions button');
     buttons[0].onclick=()=>bump(event,t._id,'replies');
     buttons[0].querySelector('.count').textContent=fmt(t.commentCount || 0);
     buttons[0].id='rp'+t._id;
-    
+
     buttons[1].onclick=()=>toggleRT(t._id);
-    buttons[1].querySelector('.count').textContent=fmt(t.repostCount || 0); // sửa lại lỗi cú pháp(retpost thành repost)
+    buttons[1].querySelector('.count').textContent=fmt(t.repostCount || 0);
     buttons[1].id='rt'+t._id;
-    
+
     buttons[2].onclick=()=>toggleLike(t._id);
     buttons[2].querySelector('.count').textContent=fmt(t.likeCount || 0);
     buttons[2].id='lk'+t._id;
-    
+
     buttons[3].onclick=()=>bump(event,t._id,'views');
     buttons[3].querySelector('.count').textContent=fmt(t.viewsCount || 0);
     buttons[3].id='vw'+t._id;
-    
+
     el.appendChild(clone);
   });
 }
@@ -226,7 +194,7 @@ function toggleRT(id){
       countEl.textContent=fmt(data.repostCount);
       btn.classList.remove('retweeted');
       if(data.retweeted) btn.classList.add('retweeted');
-      t.repostCount = data.repostCount; // đổi retpost thành repost
+      t.repostCount = data.repostCount;
       t.retweeted = data.retweeted;
     }
   })
@@ -400,10 +368,24 @@ async function postTweet(e){
   }
 }
 
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+}));
+
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',function(){
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');
+}));
+
+if(document.getElementById('feed-list')){
+  loadFollows();
+  loadPosts();
+}
 // chuyển tab giữa dành cho bạn và đang theo dõi
-document.querySelectorAll('.tab').forEach(function(tab, index){
+document.querySelectorAll('.tab-bar .tabs .tab').forEach(function(tab, index){
   tab.addEventListener('click', function(){
-    document.querySelectorAll('.tab').forEach(function(item){
+    document.querySelectorAll('.tab-bar .tabs .tab').forEach(function(item){
       item.classList.remove('active');
     });
 
@@ -435,7 +417,6 @@ if(homeSearchInput){
   });
 }
 
-// chức năng tìm kiếm
 const homeSearchForm = document.getElementById('home-search-form');
 if(homeSearchForm){
   homeSearchForm.addEventListener('submit', function(e){
@@ -443,6 +424,29 @@ if(homeSearchForm){
     const keyword = homeSearchInput ? homeSearchInput.value.trim() : '';
     window.location.href = keyword ? `/explore?q=${encodeURIComponent(keyword)}` : '/explore';
   });
+}
+
+async function loadFollowingPosts() {
+  try {
+    const response = await fetch('/get_following_posts');
+    const result = await response.json();
+
+    if(result.success && result.data) {
+      tweets = result.data.map(post => ({
+        ...post,
+        replies: 0,
+        liked: false,
+        retweeted: false,
+        repostCount: post.repostCount || 0,
+        color: ['#7c3aed', '#db2777', '#059669', '#1d9bf0'][Math.floor(Math.random() * 4)]
+      }));
+      renderFeed();
+    } else {
+      document.getElementById('feed-list').innerHTML = '<p style="padding:20px;text-align:center;color:#999">' + (result.message || 'Không có bài viết nào') + '</p>';
+    }
+  } catch(err) {
+    console.error('Lỗi khi load following posts:', err);
+  }
 }
 
 if(document.getElementById('feed-list')){

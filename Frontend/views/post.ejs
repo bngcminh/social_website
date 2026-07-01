@@ -33,7 +33,13 @@
           <div class="repost-label">🔁 Đã đăng lại</div>
         <% } %>
         <div class="tweet-header">
-          <div class="avatar" onclick="window.location.href='/profile/<%= post.author.username %>'" style="cursor:pointer"><%= post.author.username.substring(0,1).toUpperCase() %></div>
+          <div class="avatar" onclick="window.location.href='/profile/<%= post.author.username %>'" style="cursor:pointer">
+            <% if (post.author.avatar) { %>
+              <img src="<%= post.author.avatar %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+            <% } else { %>
+              <%= post.author.username.substring(0,1).toUpperCase() %>
+            <% } %>
+          </div>
           <div class="tweet-meta">
             <div class="tweet-user-post">
               <span class="tweet-name" onclick="window.location.href='/profile/<%= post.author.username %>'" style="cursor:pointer"><%= post.author.username %></span>
@@ -73,6 +79,7 @@
           <div class="tweet-timestamp" style="margin-top:12px;color:#71767b;font-size:14px">
             <%= new Date(post.createdAt).toLocaleString('vi-VN') %>
             <% if (post.isEdited) { %> · Đã chỉnh sửa <% } %>
+            <span class="count" style="margin-left: 8px; color: #000; font-weight: bold;"> <%= post.viewCount %> Lượt Xem</span>
           </div>
 
 
@@ -91,7 +98,6 @@
             </button>
             <button class="act views" data-action="views">
               <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M4 4.5C4 3.12 5.119 2 6.5 2h11C18.881 2 20 3.12 20 4.5v18.44l-8-5.71-8 5.71V4.5zM6.5 4c-.276 0-.5.22-.5.5v14.56l6-4.29 6 4.29V4.5c0-.28-.224-.5-.5-.5h-11z"></path></g></svg>
-              <span class="count"><%= post.viewCount %></span>
             </button>
             <button class="act views" data-action="views">
               <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.5em;height:1.5em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>
@@ -104,7 +110,13 @@
       <div class="comment-section" data-post-id="<%= post.id %>">
         <div class="comment-input">
           <div class="avatar-post">
-            <div class="avatar" onclick="window.location.href='/profile/<%= user.username %>'" style="cursor:pointer"><%= user ? user.username.substring(0,1).toUpperCase() : 'U' %></div>
+          <div class="avatar" onclick="window.location.href='/profile/<%= user.username %>'" style="cursor:pointer">
+            <% if (user && user.avatar) { %>
+              <img src="<%= user.avatar %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+            <% } else { %>
+              <%= user ? user.username.substring(0,1).toUpperCase() : 'U' %>
+            <% } %>
+          </div>
           </div>
           <div class="comment-input-field">
             <input type="text" placeholder="Viết bình luận..." id="comment-input-field">
@@ -263,7 +275,7 @@ async function loadComments(){
     list.innerHTML = '';
 
     if(!data.comments || data.comments.length === 0){
-      list.innerHTML = '<p style="padding:16px;color:#71767b">Chưa có bình luận nào</p>';
+      list.innerHTML = '<p style="padding:16px;color:#71767b;display:flex;justify-content:center">Chưa có bình luận nào</p>';
       return;
     }
 
@@ -273,8 +285,13 @@ data.comments.forEach(c => {
   const isOwner = c.author?._id?.toString() === currentUserId;
 
   el.innerHTML = `
-    <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
-    <div class="tweet-body">
+      <div class="avatar" style="cursor:pointer" onclick="window.location.href='/profile/${c.author?.username}'">
+        ${c.author?.avatar 
+          ? `<img src="${c.author.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` 
+          : c.author?.username?.charAt(0).toUpperCase() || 'U'
+        }
+      </div>
+      <div class="tweet-body">
       <div class="tweet-meta">
         <div class="tweet-user-post-cmt">
           <span class="tweet-name">${c.author?.username || 'Anonymous'}</span>

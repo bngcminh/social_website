@@ -59,7 +59,8 @@ async function toggleFollow(userId) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({})
         });
 
         if (response.ok) {
@@ -73,6 +74,9 @@ async function toggleFollow(userId) {
             const followingEl = document.querySelector('.stat-following .stat-count');
             if(followerEl) followerEl.textContent = data.followersCount;
             if(followingEl) followingEl.textContent = data.followingCount;
+        } else {
+            const err = await response.text();
+            alert('Lỗi: ' + err);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -242,27 +246,32 @@ function renderLikedPosts(posts) {
     }
     
     posts.forEach(post => {
+        
         const postEl = document.createElement('div');
         postEl.className = 'post';
         postEl.setAttribute('data-post-id', String(post._id));
-        
+        postEl.style.cursor = 'pointer';
+        postEl.addEventListener('click', function(e){
+        if(e.target.closest('.tweet-actions') || e.target.closest('.tweet-options')) return;
+        window.location.href = `/post/${post._id}`;
+        });
+
         const avatarContent = post.author.avatar ? 
             `<img src="${post.author.avatar}" alt="${post.author.username}">` :
-            `<span>${post.author.username.substring(0, 2).toUpperCase()}</span>`;
-        
+            `<span>${post.author.username.substring(0, 1).toUpperCase()}</span>`;
+
         postEl.innerHTML = `
             <div class="post-left">
-                <div class="avatar">${avatarContent}</div>
+                <div class="avatar" onclick="event.stopPropagation();window.location.href='/profile/${post.author.username}'" style="cursor:pointer">${avatarContent}</div>
             </div>
             <div class="post-right">
                 <div class="post-header">
                     <div class="tweet-user">
-                        <span class="post-author">${post.author.username}</span>
+                        <span class="post-author" onclick="event.stopPropagation();window.location.href='/profile/${post.author.username}'" style="cursor:pointer">${post.author.username}</span>
                         <span class="post-handle">@${post.author.username}</span>
                         <span class="post-time"> · ${new Date(post.createdAt).toLocaleDateString('vi-VN')}</span>
                     </div>
                     <div class="tweet-options">
-                        <svg fill="currentColor" fill-rule="evenodd" height="64" viewBox="0 0 24 24" width="64" xmlns="http://www.w3.org/2000/svg" style="flex: 0 0 auto; line-height: 1;"><title>Claude</title><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z"></path></svg>
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
                     </div>
                 </div>
@@ -283,7 +292,7 @@ function renderLikedPosts(posts) {
                     </button>
                     <button class="act retweet" data-action="retweet">
                         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.25em;height:1.25em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>
-                        <span class="count">${fmt(post.retpostCount || 0)}</span>
+                        <span class="count">${fmt(post.repostCount || 0)}</span>
                     </button>
                     <button class="act like" data-action="like">
                         <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.25em;height:1.25em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"></path></g></svg>
@@ -300,60 +309,12 @@ function renderLikedPosts(posts) {
         container.appendChild(postEl);
     });
     
-    // Re-attach event listeners
-    document.querySelectorAll('.post .tweet-actions button').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const postElement = this.closest('.post');
-            if(!postElement) return;
-            
-            const postId = postElement.getAttribute('data-post-id');
-            if(!postId) {
-                console.error('Post ID not found!');
-                return;
-            }
-            
-            const action = this.getAttribute('data-action');
-            
-            if(action === 'like') {
-                togglePostLike(postId, this);
-            } else if(action === 'retweet') {
-                togglePostRetweet(postId, this);
-            } else if(action === 'reply') {
-                replyToPost(postId, this);
-            }
-        });
-    });
+    bindPostActionButtons(container);
 }
 
 // Load post counts on page load
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Add event listeners to action buttons
-    document.querySelectorAll('.post .tweet-actions button').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const postElement = this.closest('.post');
-            if(!postElement) return;
-            
-            const postId = postElement.getAttribute('data-post-id');
-            if(!postId) {
-                console.error('Post ID not found!');
-                return;
-            }
-            
-            const action = this.getAttribute('data-action');
-            console.log('Action:', action, 'PostID:', postId);
-            
-            if(action === 'like') {
-                togglePostLike(postId, this);
-            } else if(action === 'retweet') {
-                togglePostRetweet(postId, this);
-            } else if(action === 'reply') {
-                replyToPost(postId, this);
-            }
-        });
-    });
+    bindPostActionButtons();
 });
 
 // Toggle like on a post
@@ -381,6 +342,15 @@ function togglePostLike(postId, btn) {
 
 // Toggle retweet on a post
 function togglePostRetweet(postId, btn) {
+    // cập nhật UI ngay lập tức
+    const countEl = btn.querySelector('.count');
+    const isRetweeted = btn.classList.contains('retweeted');
+    const currentCount = parseInt(countEl.textContent) || 0;
+    
+    btn.classList.toggle('retweeted');
+    countEl.textContent = fmt(isRetweeted ? currentCount - 1 : currentCount + 1);
+
+    // rồi mới fetch
     fetch(`/posts/${postId}/retweet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -394,14 +364,22 @@ function togglePostRetweet(postId, btn) {
         return resp.json();
     })
     .then(data => {
-        if(data.success){
-            const countEl = btn.querySelector('.count');
+        if(data && data.success){
+            // đồng bộ lại với số thật từ server
             countEl.textContent = fmt(data.repostCount);
-            btn.classList.remove('retweeted');
-            if(data.retweeted) btn.classList.add('retweeted');
+            btn.classList.toggle('retweeted', data.retweeted);
+        } else {
+            // rollback nếu lỗi
+            btn.classList.toggle('retweeted');
+            countEl.textContent = fmt(currentCount);
         }
     })
-    .catch(err => console.error('Error:', err));
+    .catch(err => {
+        console.error('Error:', err);
+        // rollback
+        btn.classList.toggle('retweeted');
+        countEl.textContent = fmt(currentCount);
+    });
 }
 
 // Reply to a post
@@ -430,23 +408,63 @@ function replyToPost(postId, btn) {
     })
     .catch(err => console.error('Error:', err));
 }
+
+function bindPostActionButtons(scope = document) {
+    return scope;
+}
+
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.post .tweet-actions button[data-action]');
+    if (!btn) {
+        return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const postElement = btn.closest('.post');
+    if(!postElement) return;
+
+    const postId = postElement.getAttribute('data-post-id');
+    if(!postId) {
+        console.error('Post ID not found!');
+        return;
+    }
+
+    const action = btn.getAttribute('data-action');
+
+    if(action === 'like') {
+        togglePostLike(postId, btn);
+    } else if(action === 'retweet') {
+        togglePostRetweet(postId, btn);
+    } else if(action === 'reply') {
+        replyToPost(postId, btn);
+    }
+}, true);
+
 function switchTab(btn) {
-    document.querySelectorAll('.profile-tabs .tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
+    document.querySelectorAll('.profile-tabs .tab').forEach(tab => tab.classList.remove('active'));
     btn.parentElement.classList.add('active');
     
     const tabName = btn.getAttribute('data-tab');
-    
-    if(tabName === 'likes') {
-        loadLikedPosts();
-    } else if(tabName === 'replies') {
-        loadReplies();  // thêm case này
-    } else if(tabName === 'posts') {
-        const profilePosts = document.querySelector('.profile-posts');
-        if(profilePosts && originalPostsHTML) {
-            profilePosts.innerHTML = originalPostsHTML;
-        }
+    const profilePosts = document.querySelector('.profile-posts');
+
+    switch (tabName) {
+        case 'likes':
+            loadLikedPosts();
+            break;
+        case 'replies':
+            loadReplies();
+            break;
+        case 'reposts':
+            loadReposts();
+            break;
+        case 'posts':
+            if (profilePosts && typeof originalPostsHTML !== 'undefined') {
+                profilePosts.innerHTML = originalPostsHTML;
+                bindPostActionButtons(profilePosts);
+            }
+            break;
     }
 }
 async function loadReplies(){
@@ -460,32 +478,112 @@ async function loadReplies(){
       container.innerHTML = `<div class="empty-state"><p>Chưa có trả lời nào</p></div>`;
       return;
     }
-
+    
     data.comments.forEach(c => {
-      const el = document.createElement('div');
-      el.className = 'post';
-      el.innerHTML = `
-        <div class="post-left">
-          <div class="avatar">${c.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
-        </div>
-        <div class="post-right">
-          <div class="post-header">
-            <div class="tweet-user">
+        const avatarContent = c.author?.avatar 
+            ? `<img src="${c.author.avatar}" alt="${c.author.username}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`
+            : c.author?.username?.charAt(0).toUpperCase() || 'U';
+
+        const el = document.createElement('div');
+        el.className = 'post';
+        el.innerHTML = `
+            <div class="post-left">
+            <div class="avatar">${avatarContent}</div>
+            </div>
+            <div class="post-right">
+            <div class="post-header">
+                <div class="tweet-user">
                 <span class="post-author">${c.author.username}</span>
                 <span class="post-handle">@${c.author.username}</span>
                 <span class="post-time"> · ${new Date(c.createdAt).toLocaleDateString('vi-VN')}</span>
+                </div>
+                <div class="tweet-options">
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
+                </div>
+            </div>
+            <div class="post-content">${c.content || ''}</div>
+            ${c.image ? `<img src="${c.image}" style="border-radius:16px;max-width:100%;margin-top:8px">` : ''}
+            </div>
+        `;
+        container.appendChild(el);
+        });
+  } catch(err) {
+    console.error('Error loading replies:', err);
+  }
+}
+
+async function startChat(userId){
+    try {
+        const res = await fetch('/conversations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ receiverId: userId })
+        });
+        const data = await res.json();
+        if(data.success){
+            window.location.href = '/messages';
+        } else {
+            alert('Không thể tạo cuộc trò chuyện');
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+
+
+async function loadReposts(){
+  try {
+    const res = await fetch(`/profile/${profileUsername}/reposts`);
+    const data = await res.json();
+    const container = document.querySelector('.profile-posts');
+    container.innerHTML = '';
+
+    if(!data.reposts || data.reposts.length === 0){
+      container.innerHTML = `<div class="empty-state"><p>Chưa có bài đăng lại nào</p></div>`;
+      return;
+    }
+
+    data.reposts.forEach(post => {
+      const original = post.rePostOf;
+      const el = document.createElement('div');
+      el.className = 'post';
+      el.style.cursor = 'pointer';
+      el.onclick = () => window.location.href = `/post/${original?._id || post._id}`;
+      el.innerHTML = `
+        <div class="post-left">
+          <div class="avatar">${post.author?.username?.charAt(0).toUpperCase() || 'U'}</div>
+        </div>
+        <div class="post-right">
+          <div class="repost-label" style="color:#71767b;font-size:13px;margin-bottom:4px">
+            <svg viewBox="0 0 24 24" aria-hidden="true" style="width:1.25em;height:1.25em;display:inline-block;fill:currentColor;vertical-align:text-bottom"><g><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"></path></g></svg>
+            <span>${post.author?.username} đã đăng lại</span>
+          </div>
+          <div class="post-header">
+            <div class="tweet-user">
+                <span class="post-author">${original?.author?.username || post.author?.username}</span>
+                <span class="post-handle">@${original?.author?.username || post.author?.username}</span>
+                <span class="post-time"> · ${new Date(original?.createdAt || post.createdAt).toLocaleDateString('vi-VN')}</span>
             </div>
             <div class="tweet-options">
                 <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi"><g><path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></g></svg>
             </div>
-        </div>
-          <div class="post-content">${c.content || ''}</div>
-          ${c.image ? `<img src="${c.image}" style="border-radius:16px;max-width:100%;margin-top:8px">` : ''}
+          </div>
+          <div class="post-content">${original?.content || post.content || ''}</div>
+          ${original?.media && original.media.length > 0 ? `
+            <div class="post-media">
+              ${original.media.map(m =>
+                m.type === 'image'
+                  ? `<img src="${m.url}" style="border-radius:16px;max-width:100%">`
+                  : `<video src="${m.url}" controls style="border-radius:16px;max-width:100%"></video>`
+              ).join('')}
+            </div>
+          ` : ''}
         </div>
       `;
       container.appendChild(el);
     });
   } catch(err) {
-    console.error('Error loading replies:', err);
+    console.error('Error loading reposts:', err);
   }
 }
