@@ -37,7 +37,8 @@ export const searchInformation = async function(req, rep){
 
         if(!type || type === 'all' || type === 'posts'){
             posts = await Post.find({
-                content: regex 
+                content: regex,
+                rePostOf: null
             })
             .populate('author', 'username avatar')
             .sort({ createdAt: -1 })
