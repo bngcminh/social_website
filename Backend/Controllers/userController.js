@@ -333,61 +333,6 @@ export const getSuggestions = async function(req, rep){
     }
 }
 
-export const toggleRetweet = async function(req, rep){
-    try{
-        const currentUserId = req.user.id;
-        const postId = req.params.postId;
-        const post = await Post.findById(postId).populate('author', 'username');
-
-        if(!post){
-            return rep.code(404).send({
-                success: false,
-                message: 'Khong tim thay bai viet'
-            });
-        }
-
-        const existing = await Post.findOne({
-            rePostOf: postId,
-            author: currentUserId
-        });
-
-        if(existing){
-            await Post.deleteOne({ _id: existing._id });
-            post.repostCount = Math.max(0, (post.repostCount || 0) - 1);
-            await post.save();
-
-            return rep.send({
-                success: true,
-                retweeted: false,
-                repostCount: post.repostCount,
-                message: 'Da bo chia se'
-            });
-        }
-
-        await Post.create({
-            content: `Chia se tu @${post.author.username}`,
-            author: currentUserId,
-            rePostOf: postId
-        });
-
-        post.repostCount = (post.repostCount || 0) + 1;
-        await post.save();
-
-        return rep.send({
-            success: true,
-            retweeted: true,
-            repostCount: post.repostCount,
-            message: 'Da chia se bai viet'
-        });
-    }catch(err){
-        console.log(err);
-        return rep.code(500).send({
-            success: false,
-            message: 'Có lỗi khi đăng lại bài viết'
-        });
-    }
-}
-
 export const getLikedPosts = async function(req, rep){
     try{
         const userId = req.user.id;
