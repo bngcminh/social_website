@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
+import { createNotification } from './notificationController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -263,6 +264,15 @@ export const followUser = async function(req, rep){
             { $inc: { followersCount: 1 } },
             { new: true }
         ).select('followersCount');
+
+        const currentUser = await User.findById(req.user.id).select('username');
+
+        await createNotification({
+            recipient: followingId,
+            sender: req.user.id,
+            type: 'follow',
+            url: `/profile/${currentUser.username}`
+        });
 
         return rep.send({
             success: true,

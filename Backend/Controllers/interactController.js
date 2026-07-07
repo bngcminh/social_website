@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
+import { createNotification } from './notificationController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -47,6 +48,14 @@ export const likePost = async function(req, rep){
             { $inc: { likeCount: 1 } },
             { new: true }
         );
+
+        await createNotification({
+            recipient: post.author,
+            sender: req.user.id,
+            type: 'like',
+            post: postId,
+            url: `/post/${postId}`
+        });
 
         return rep.send({
             liked: true,
@@ -101,6 +110,15 @@ export const createComment = async function(req, rep){
             { $inc: { commentCount: 1 } },
             { new: true }
         );
+
+        await createNotification({
+            recipient: post.author,
+            sender: req.user.id,
+            type: 'comment',
+            post: postId,
+            comment: comment._id,
+            url: `/post/${postId}`
+        });
 
         rep.send({
             message: 'Tạo bình luận thành công',

@@ -34,6 +34,27 @@ function timeAgo(dateStr){
     return date.toLocaleDateString('vi-VN');
 }
 
+async function refreshHeaderNotificationBadge(){
+    try{
+        const badge = document.getElementById('header-notif-badge');
+        if(!badge) return;
+
+        const res = await fetch('/api/notifications/unread-count');
+        const data = await res.json();
+        const count = data.success ? data.unreadCount : 0;
+
+        if(count > 0){
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'flex';
+        }else{
+            badge.textContent = '';
+            badge.style.display = 'none';
+        }
+    }catch(err){
+        console.log('Loi cap nhat so thong bao:', err);
+    }
+}
+
 function renderNotification(notif){
     const template = document.getElementById('notification-template');
     const clone = template.content.cloneNode(true);
@@ -48,7 +69,11 @@ function renderNotification(notif){
 
     const avatarEl = item.querySelector('.notif-avatar');
     if(notif.sender){
-        avatarEl.textContent = notif.sender.username.substring(0, 1).toUpperCase();
+        if(notif.sender.avatar){
+            avatarEl.innerHTML = `<img src="${notif.sender.avatar}" alt="${notif.sender.username}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+        }else{
+            avatarEl.textContent = notif.sender.username.substring(0, 1).toUpperCase();
+        }
     }
 
     const textEl = item.querySelector('.notif-text');
@@ -69,6 +94,7 @@ function renderNotification(notif){
         if(e.target.closest('.notif-delete')) return;
         markAsRead(notif._id);
         item.classList.remove('unread');
+        refreshHeaderNotificationBadge();
         if(notif.url){
             window.location.href = notif.url;
         }
@@ -131,6 +157,7 @@ function loadMoreNotifications(){
 async function markAsRead(id){
     try{
         await fetch(`/api/notifications/${id}/read`, { method: 'PUT' });
+        refreshHeaderNotificationBadge();
     }catch(err){
         console.log('Lỗi đánh dấu đã đọc:', err);
     }
@@ -142,6 +169,7 @@ async function markAllAsRead(){
         document.querySelectorAll('.notif-item.unread').forEach(function(item){
             item.classList.remove('unread');
         });
+        refreshHeaderNotificationBadge();
     }catch(err){
         console.log('Lỗi đánh dấu tất cả:', err);
     }
@@ -152,6 +180,7 @@ async function deleteNotification(id, element){
         const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
         const data = await res.json();
         if(data.success){
+            const wasUnread = element.classList.contains('unread');
             element.style.transition = 'opacity .3s, transform .3s';
             element.style.opacity = '0';
             element.style.transform = 'translateX(20px)';
@@ -161,6 +190,7 @@ async function deleteNotification(id, element){
                     document.getElementById('empty-state').style.display = 'flex';
                 }
             }, 300);
+            if(wasUnread) refreshHeaderNotificationBadge();
         }
     }catch(err){
         console.log('Lỗi xóa thông báo:', err);

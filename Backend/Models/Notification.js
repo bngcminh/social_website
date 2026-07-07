@@ -16,8 +16,16 @@ const notificationSchema = new mongoose.Schema({
         enum: [
             'like',
             'comment',
-            'follow'
-        ]
+            'follow',
+            'admin_lock_post',
+            'admin_lock_account'
+        ],
+        required: true
+    },
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        default: null
     },
     comment: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,6 +36,6 @@ const notificationSchema = new mongoose.Schema({
     url: { type: String, default: null },
 }, { timestamps: true });
 
-notificationSchema.index({ recipient: 1, createAt: -1 })
+notificationSchema.index({ recipient: 1, createdAt: -1 })
 const Notification = mongoose.model('Notification', notificationSchema);
 export default Notification;
