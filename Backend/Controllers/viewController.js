@@ -119,34 +119,7 @@ export const getNotificationPage = async function(req, rep){
 export const getHome = async function(req, rep){
     try{
         const user = await getCurrentUser(req);
-        const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
-        const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
-
-        const [posts, totalPosts] = await Promise.all([
-            Post.find({ rePostOf: null })
-                .populate('author', 'username avatar')
-                .populate({
-                    path: 'rePostOf',
-                    select: 'content media author likeCount commentCount viewsCount repostCount createdAt',
-                    populate: {
-                        path: 'author',
-                        select: 'username avatar'
-                    }
-                })
-                .sort({ createdAt: -1 })
-                .skip((page - 1) * limit)
-                .limit(limit),
-            Post.countDocuments({ rePostOf: null })
-        ]);
-
-        return rep.view('home.ejs', {
-            user,
-            page,
-            limit,
-            totalPosts,
-            totalPages: Math.ceil(totalPosts / limit),
-            posts: posts.map(formPostData)
-        });
+        return rep.view('home.ejs', { user });
     }catch(err){
         console.log(err);
         return rep.code(500).send('Co loi trong qua trinh lay cac bai viet');
@@ -155,10 +128,7 @@ export const getHome = async function(req, rep){
 
 export const getHomePosts = async function(req, rep){
     try{
-        const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
-        const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
-        const [posts, totalPosts] = await Promise.all([
-            Post.find({ rePostOf: null })
+        const posts = await Post.find({ rePostOf: null })
                 .populate('author', 'username avatar')
                 .populate({
                     path: 'rePostOf',
@@ -169,11 +139,7 @@ export const getHomePosts = async function(req, rep){
                     }
                 })
                 .sort({ createdAt: -1 })
-                .skip((page - 1) * limit)
-                .limit(limit),
-            Post.countDocuments({ rePostOf: null })
-        ]);
-
+        console.log(posts)
         return rep.send({
             data: posts.map(formPostData),
             success: true
@@ -186,8 +152,6 @@ export const getHomePosts = async function(req, rep){
 
 export const getFollowingPosts = async function(req, rep){
     try{
-        const page = Math.max(Number.parseInt(req.query.page || '1', 10), 1);
-        const limit = Math.min(Math.max(Number.parseInt(req.query.limit || '20', 10), 1), 50);
 
         const followingList = await Follow.find({
             follower: req.user.id
@@ -219,8 +183,6 @@ export const getFollowingPosts = async function(req, rep){
             }
         })
         .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
 
         return rep.send({
             success: true,

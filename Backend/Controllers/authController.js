@@ -77,4 +77,5 @@ export const login = async function(req, rep){
 
 export const logout = async function(req, rep){
     rep.clearCookie('token');
+    return rep.redirect('/auth')
 }

@@ -21,7 +21,7 @@ export const getProfileUser = async function(req, rep){
             return rep.code(404).send('Nguoi dung khong ton tai');
         }
 
-        const posts = await Post.find({ author: profileUser._id })
+        const posts = await Post.find({ author: profileUser._id, rePostOf: null })
             .populate('author', 'username avatar')
             .populate({
                 path: 'rePostOf',
