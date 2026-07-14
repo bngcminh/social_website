@@ -145,54 +145,6 @@ export const updateProfile = async function(req, rep){
     }
 }
 
-export const getFollowers = async function(req, rep){
-    try{
-        const username = req.params.username;
-        const user = await User.findOne({ username });
-
-        if(!user){
-            return rep.code(400).send('Người dùng không tồn tại');
-        }
-
-        const followers = await Follow.find({ following: user._id })
-            .populate('follower', 'username avatar')
-            .sort({ createdAt: -1 });
-
-        return rep.send({
-            followers: followers.map(function(item){
-                return item.follower;
-            })
-        });
-    }catch(err){
-        console.log(err);
-        return rep.code(500).send('Có lỗi trong quá trình lấy người theo dõi');
-    }
-}
-
-export const getFollowing = async function(req, rep){
-    try{
-        const username = req.params.username;
-        const user = await User.findOne({ username });
-
-        if(!user){
-            return rep.code(400).send('Nguoi dung khong ton tai');
-        }
-
-        const following = await Follow.find({ follower: user._id })
-            .populate('following', 'username avatar')
-            .sort({ createdAt: -1 });
-
-        return rep.send({
-            following: following.map(function(item){
-                return item.following;
-            })
-        });
-    }catch(err){
-        console.log(err);
-        return rep.code(500).send('Có lỗi trong quá trình lấy người đang theo dõi');
-    }
-}
-
 export const followUser = async function(req, rep){
     try{
         const followingId = req.params.userId;
