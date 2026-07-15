@@ -1,5 +1,5 @@
 import User from '../Models/User.js';
-import Conversation from '../Models/Coversation.js'
+import Conversation from '../Models/Conversation.js'
 import Follow from '../Models/Follow.js';
 import Post from '../Models/Post.js';
 import Notification from '../Models/Notification.js';

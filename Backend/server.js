@@ -28,7 +28,7 @@ import { postRoute } from './Routes/postRoute.js';
 import { interactRoute } from './Routes/interactRoute.js';
 import { searchRoute } from './Routes/searchRoute.js';
 import { messageRoute } from './Routes/messageRoute.js';
-import Conversation from './Models/Coversation.js';
+import Conversation from './Models/Conversation.js';
 import Message from './Models/Message.js';
 import { notificationRoute } from './Routes/notificationRoute.js';
 import { adminRoute } from './Admin/Routes/adminRoute.js';
