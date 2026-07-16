@@ -50,9 +50,6 @@ export const getAuth = async function(req, rep){
 export const getSearchPage = async function(req, rep){
     try{
         const user = await getCurrentUser(req);
-        if(!user){
-            return rep.redirect('/auth');
-        }
 
         return rep.view('search.ejs', {
             user,
@@ -67,9 +64,6 @@ export const getSearchPage = async function(req, rep){
 export const getMessage = async function(req, rep){
     try{
         const user = await getCurrentUser(req);
-        if(!user){
-            return rep.redirect('/auth');
-        }
 
         const conversations = await Conversation.find({
             participants: user._id
@@ -97,9 +91,6 @@ export const getMessage = async function(req, rep){
 export const getNotificationPage = async function(req, rep){
     try{
         const user = await getCurrentUser(req);
-        if(!user){
-            return rep.redirect('/auth');
-        }
 
         const unreadCount = await Notification.countDocuments({
             recipient: user._id,
@@ -122,7 +113,7 @@ export const getHome = async function(req, rep){
         return rep.view('home.ejs', { user });
     }catch(err){
         console.log(err);
-        return rep.code(500).send('Co loi trong qua trinh lay cac bai viet');
+        return rep.code(500).send('Có lỗi trong quá trình lấy các bài viết');
     }
 }
 
@@ -218,7 +209,7 @@ export const getPostDetail = async function(req, rep){
         });
 
         if(!post){
-            return rep.code(404).send('Khong tim thay bai viet');
+            return rep.code(404).send('Không tìm thấy bài viết');
         }
 
         return rep.view('post.ejs', {
@@ -227,6 +218,6 @@ export const getPostDetail = async function(req, rep){
         });
     }catch(err){
         console.log(err);
-        return rep.code(500).send('Co loi trong qua trinh lay bai viet nay');
+        return rep.code(500).send('Có lỗi trong quá trình lấy bài viết này');
     }
 }

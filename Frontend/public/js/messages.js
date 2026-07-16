@@ -34,7 +34,7 @@ async function startConversation(receiverId){
     const result = await response.json();
 
     if(!result.success){
-        alert(result.message || 'Khong the tao cuoc tro chuyen');
+        alert(result.message || 'Không thể tạo cuộc trò chuyện');
         return;
     }
 
@@ -53,7 +53,7 @@ async function loadMessages(conversationId){
     const result = await response.json();
 
     if(!result.success){
-        alert(result.message || 'Khong the tai tin nhan');
+        alert(result.message || 'Không thể tải tin nhắn');
         return;
     }
 
@@ -136,7 +136,7 @@ socket.on('new message', function(message){
 });
 
 socket.on('chat error', function(data){
-    alert(data.message || 'Co loi khi chat');
+    alert(data.message || 'Có lỗi khi chat');
 });
 
 socket.on('conversation updated', function(conversation){
@@ -164,11 +164,11 @@ function getOtherParticipant(conversation){
 
 function getConversationPreview(conversation){
     if(!conversation.lastMessage){
-        return 'Bat dau cuoc tro chuyen...';
+        return 'Bắt đầu cuộc trò chuyện...';
     }
 
-    const prefix = String(conversation.lastMessage.sender?._id) === String(currentUserId) ? 'Ban: ' : '';
-    return prefix + (conversation.lastMessage.content || '[Hinh anh]');
+    const prefix = String(conversation.lastMessage.sender?._id) === String(currentUserId) ? 'Bạn: ' : '';
+    return prefix + (conversation.lastMessage.content || '[Hình ảnh]');
 }
 
 function upsertConversationItem(conversation){
@@ -263,7 +263,7 @@ function setupNewMessageButton() {
     }
 
     newMessageBtn.addEventListener('click', function(){
-        const targetUsername = prompt('Nhap ten nguoi dung de bat dau cuoc tro chuyen:');
+        const targetUsername = prompt('Nhập tên người dùng để bắt đầu cuộc trò chuyện:');
         if(targetUsername){
             startNewConversation(targetUsername);
         }
@@ -277,7 +277,7 @@ async function startNewConversation(username) {
         const user = result.users && result.users[0];
 
         if(!user){
-            alert('Khong tim thay nguoi dung');
+            alert('Không tìm thấy người dùng');
             return;
         }
 
@@ -285,7 +285,7 @@ async function startNewConversation(username) {
         location.reload();
     }catch(error){
         console.error('Error starting conversation:', error);
-        alert('Loi khi tao cuoc tro chuyen');
+        alert('Lỗi khi tạo cuộc trò chuyện');
     }
 }
 

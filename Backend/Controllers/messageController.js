@@ -32,14 +32,14 @@ export const createConversation = async function(req, rep){
         if(!receiverId || receiverId === req.user.id){
             return rep.code(400).send({
                 success: false,
-                message: 'Thieu receiverId'
+                message: 'Thiếu receiverId'
             });
         }
         const receiver = await User.findById(receiverId);
         if(!receiver){
             return rep.code(400).send({
                 success: false,
-                message: 'Nguoi dung khong ton tai'
+                message: 'Người dùng không tồn tại'
             });
         }
         let conversation = await Conversation.findOne({

@@ -16,7 +16,7 @@ export const likePost = async function(req, rep){
         const postExist = await Post.findById(postId);
 
         if(!postExist){
-            return rep.code(404).send('Khong tim thay bai viet');
+            return rep.code(404).send('Không tìm thấy bài viết');
         }
 
         const likeExist = await Like.findOne({
@@ -73,7 +73,7 @@ export const createComment = async function(req, rep){
         const post = await Post.findById(postId);
 
         if(!post){
-            return rep.code(404).send('Khong tim thay bai viet');
+            return rep.code(404).send('Không tìm thấy bài viết');
         }
 
         const parts = req.parts();
@@ -234,7 +234,7 @@ export const toggleRetweet = async function(req, rep){
         if(!post){
             return rep.code(404).send({
                 success: false,
-                message: 'Khong tim thay bai viet'
+                message: 'Không tìm thấy bài viết'
             });
         }
 
@@ -252,7 +252,7 @@ export const toggleRetweet = async function(req, rep){
                 success: true,
                 retweeted: false,
                 repostCount: post.repostCount,
-                message: 'Da bo chia se'
+                message: 'Đã bỏ chia sẻ'
             });
         }
 
@@ -269,7 +269,7 @@ export const toggleRetweet = async function(req, rep){
             success: true,
             retweeted: true,
             repostCount: post.repostCount,
-            message: 'Da chia se bai viet'
+            message: 'Đã chia sẻ bài viết'
         });
     }catch(err){
         console.log(err);

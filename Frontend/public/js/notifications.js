@@ -51,7 +51,7 @@ async function refreshHeaderNotificationBadge(){
             badge.style.display = 'none';
         }
     }catch(err){
-        console.log('Loi cap nhat so thong bao:', err);
+        console.log('Lỗi cập nhật số thông báo:', err);
     }
 }
 

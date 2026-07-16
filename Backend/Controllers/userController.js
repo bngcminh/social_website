@@ -19,7 +19,7 @@ export const getProfileUser = async function(req, rep){
         const profileUser = await User.findOne({ username }).select('-password');
 
         if(!profileUser){
-            return rep.code(404).send('Nguoi dung khong ton tai');
+            return rep.code(404).send('Người dùng không tồn tại');
         }
 
         const posts = await Post.find({ author: profileUser._id, rePostOf: null })
@@ -290,7 +290,7 @@ export const getSuggestions = async function(req, rep){
         console.log(err);
         return rep.code(500).send({
             success: false,
-            message: 'Co loi khi lay goi y'
+            message: 'Có lỗi khi lấy gợi ý'
         });
     }
 }
